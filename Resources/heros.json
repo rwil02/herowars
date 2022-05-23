@@ -1,0 +1,386 @@
+[
+  {
+    "image": "http://localhost/HeroWars/Chabba_Avatar.png",
+    "id": 11,
+    "name": "Chabba",
+    "position": 1
+  },
+  {
+    "image": "http://localhost/HeroWars/Aurora_Avatar.png",
+    "id": 1,
+    "name": "Aurora",
+    "position": 2
+  },
+  {
+    "image": "http://localhost/HeroWars/Cleaver_Avatar.png",
+    "id": 24,
+    "name": "Cleaver",
+    "position": 3
+  },
+  {
+    "image": "http://localhost/HeroWars/Corvus_Avatar.png",
+    "id": 50,
+    "name": "Corvus",
+    "position": 4
+  },
+  {
+    "image": "http://localhost/HeroWars/Luther_Avatar.png",
+    "id": 27,
+    "name": "Luther",
+    "position": 5
+  },
+  {
+    "image": "http://localhost/HeroWars/Ziri_Avatar.png",
+    "id": 39,
+    "name": "Ziri",
+    "position": 6
+  },
+  {
+    "image": "http://localhost/HeroWars/Rufus_Avatar.png",
+    "id": 42,
+    "name": "Rufus",
+    "position": 7
+  },
+  {
+    "image": "http://localhost/HeroWars/Astaroth_Avatar.png",
+    "id": 4,
+    "name": "Astaroth",
+    "position": 8
+  },
+  {
+    "image": "http://localhost/HeroWars/Galahad_Avatar.png",
+    "id": 2,
+    "name": "Galahad",
+    "position": 9
+  },
+  {
+    "image": "http://localhost/HeroWars/Ishmael_Avatar.png",
+    "id": 25,
+    "name": "Ishmael",
+    "position": 10
+  },
+  {
+    "image": "http://localhost/HeroWars/K%27arkh_Avatar.png",
+    "id": 41,
+    "name": "K'arkh",
+    "position": 11
+  },
+  {
+    "image": "http://localhost/HeroWars/Markus_Avatar.png",
+    "id": 21,
+    "name": "Markus",
+    "position": 12
+  },
+  {
+    "image": "http://localhost/HeroWars/Andvari_Avatar.png",
+    "id": 47,
+    "name": "Andvari",
+    "position": 13
+  },
+  {
+    "image": "http://localhost/HeroWars/Yasmine_Avatar.png",
+    "id": 49,
+    "name": "Yasmine",
+    "position": 14
+  },
+  {
+    "image": "http://localhost/HeroWars/Elmir_Avatar.png",
+    "id": 38,
+    "name": "Elmir",
+    "position": 15
+  },
+  {
+    "image": "http://localhost/HeroWars/Lilith_Avatar.png",
+    "id": 26,
+    "name": "Lilith",
+    "position": 55
+  },
+  {
+    "image": "http://localhost/HeroWars/Qing_Mao_Avatar.png",
+    "id": 28,
+    "name": "Qing Mao",
+    "position": 17
+  },
+  {
+    "image": "http://localhost/HeroWars/Satori_Avatar.png",
+    "id": 45,
+    "name": "Satori",
+    "position": 18
+  },
+  {
+    "image": "http://localhost/HeroWars/Maya_Avatar.png",
+    "id": 36,
+    "name": "Maya",
+    "position": 19
+  },
+  {
+    "image": "http://localhost/HeroWars/Arachne_Avatar.png",
+    "id": 12,
+    "name": "Arachne",
+    "position": 20
+  },
+  {
+    "image": "http://localhost/HeroWars/Dante_Avatar.png",
+    "id": 16,
+    "name": "Dante",
+    "position": 21
+  },
+  {
+    "image": "http://localhost/HeroWars/Krista_Avatar.png",
+    "id": 34,
+    "name": "Krista",
+    "position": 22
+  },
+  {
+    "image": "http://localhost/HeroWars/Keira_Avatar.png",
+    "id": 3,
+    "name": "Keira",
+    "position": 23
+  },
+  {
+    "image": "http://localhost/HeroWars/Judge_Avatar.png",
+    "id": 18,
+    "name": "Judge",
+    "position": 24
+  },
+  {
+    "image": "http://localhost/HeroWars/Morrigan_Avatar.png",
+    "id": 51,
+    "name": "Morrigan",
+    "position": 25
+  },
+  {
+    "image": "http://localhost/HeroWars/Celeste_Avatar.png",
+    "id": 43,
+    "name": "Celeste",
+    "position": 26
+  },
+  {
+    "image": "http://localhost/HeroWars/Kai_Avatar.png",
+    "id": 5,
+    "name": "Kai",
+    "position": 27
+  },
+  {
+    "image": "http://localhost/HeroWars/Isaac_Avatar.png",
+    "id": 52,
+    "name": "Isaac",
+    "position": 28
+  },
+  {
+    "image": "http://localhost/HeroWars/Jhu_Avatar.png",
+    "id": 37,
+    "name": "Jhu",
+    "position": 29
+  },
+  {
+    "image": "http://localhost/HeroWars/Nebula_Avatar.png",
+    "id": 40,
+    "name": "Nebula",
+    "position": 30
+  },
+  {
+    "image": "http://localhost/HeroWars/Sebastian_Avatar.png",
+    "id": 48,
+    "name": "Sebastian",
+    "position": 31
+  },
+  {
+    "image": "http://localhost/HeroWars/Mojo_Avatar.png",
+    "id": 17,
+    "name": "Mojo",
+    "position": 32
+  },
+  {
+    "image": "http://localhost/HeroWars/Heidi_Avatar.png",
+    "id": 9,
+    "name": "Heidi",
+    "position": 33
+  },
+  {
+    "image": "http://localhost/HeroWars/Jorgen_Avatar.png",
+    "id": 35,
+    "name": "Jorgen",
+    "position": 34
+  },
+  {
+    "image": "http://localhost/HeroWars/Orion_Avatar.png",
+    "id": 13,
+    "name": "Orion",
+    "position": 35
+  },
+  {
+    "image": "http://localhost/HeroWars/Ginger_Avatar.png",
+    "id": 15,
+    "name": "Ginger",
+    "position": 36
+  },
+  {
+    "image": "http://localhost/HeroWars/Daredevil_Avatar.png",
+    "id": 8,
+    "name": "Daredevil",
+    "position": 37
+  },
+  {
+    "image": "http://localhost/HeroWars/Dark_Star_Avatar.png",
+    "id": 19,
+    "name": "Dark Star",
+    "position": 38
+  },
+  {
+    "image": "http://localhost/HeroWars/Lars_Avatar.png",
+    "id": 33,
+    "name": "Lars",
+    "position": 39
+  },
+  {
+    "image": "http://localhost/HeroWars/Astrid_Avatar.png",
+    "id": 44,
+    "name": "Astrid and Lucas",
+    "position": 40
+  },
+  {
+    "image": "http://localhost/HeroWars/Cornelius_Avatar.png",
+    "id": 30,
+    "name": "Cornelius",
+    "position": 41
+  },
+  {
+    "image": "http://localhost/HeroWars/Faceless_Avatar.png",
+    "id": 10,
+    "name": "Faceless",
+    "position": 42
+  },
+  {
+    "image": "http://localhost/HeroWars/Fox_Avatar.png",
+    "id": 14,
+    "name": "Fox",
+    "position": 46
+  },
+  {
+    "image": "http://localhost/HeroWars/Lian_Avatar.png",
+    "id": 23,
+    "name": "Lian",
+    "position": 44
+  },
+  {
+    "image": "http://localhost/HeroWars/Phobos_Avatar.png",
+    "id": 6,
+    "name": "Phobos",
+    "position": 45
+  },
+  {
+    "image": "http://localhost/HeroWars/Artemis_Avatar.png",
+    "id": 20,
+    "name": "Artemis",
+    "position": 46
+  },
+  {
+    "image": "http://localhost/HeroWars/Dorian_Avatar.png",
+    "id": 29,
+    "name": "Dorian",
+    "position": 47
+  },
+  {
+    "image": "http://localhost/HeroWars/Peppy_Avatar.png",
+    "id": 22,
+    "name": "Peppy",
+    "position": 48
+  },
+  {
+    "image": "http://localhost/HeroWars/Jet_Avatar.png",
+    "id": 31,
+    "name": "Jet",
+    "position": 49
+  },
+  {
+    "image": "http://localhost/HeroWars/Thea_Avatar.png",
+    "id": 7,
+    "name": "Thea",
+    "position": 50
+  },
+  {
+    "image": "http://localhost/HeroWars/Helios_Avatar.png",
+    "id": 32,
+    "name": "Helios",
+    "position": 51
+  },
+  {
+    "image": "http://localhost/HeroWars/Martha_Avatar.png",
+    "id": 46,
+    "name": "Martha",
+    "position": 52
+  },
+  {
+    "image": "http://localhost/HeroWars/Iris_Avatar.png",
+    "id": 55,
+    "name": "Iris",
+    "position": 43
+  },
+  {
+    "image": "http://localhost/HeroWars/Amira_Avatar.png",
+    "id": 56,
+    "name": "Amira",
+    "position": 33
+  },
+  {
+    "image": "http://localhost/HeroWars/Iris_Avatar.png",
+    "id": 55,
+    "name": "Iris",
+    "position": 43
+  },
+  {
+    "image": "http://localhost/HeroWars/Tristan_Avatar.png",
+    "id": null,
+    "name": "Tristan",
+    "position": 10
+  },
+  {
+    "image": "http://localhost/HeroWars/Fenris_Avatar.png",
+    "id": 6000,
+    "name": "Fenris",
+    "position": 99
+  },
+  {
+    "image": "http://localhost/HeroWars/Oliver_Avatar.png",
+    "id": 6001,
+    "name": "Oliver",
+    "position": 99
+  },
+  {
+    "image": "http://localhost/HeroWars/Merlin_Avatar.png",
+    "id": 6002,
+    "name": "Merlin",
+    "position": 99
+  },
+  {
+    "image": "http://localhost/HeroWars/Mara_Avatar.png",
+    "id": 6003,
+    "name": "Mara",
+    "position": 99
+  },
+  {
+    "image": "http://localhost/HeroWars/Cain_Avatar.png",
+    "id": 6004,
+    "name": "Cain",
+    "position": 99
+  },
+  {
+    "image": "http://localhost/HeroWars/Albus_Avatar.png",
+    "id": 6005,
+    "name": "Albus",
+    "position": 99
+  },
+  {
+    "image": "http://localhost/HeroWars/Axel_Avatar.png",
+    "id": 6006,
+    "name": "Axel",
+    "position": 99
+  },
+  {
+    "image": "http://localhost/HeroWars/Biscuit_Avatar.png",
+    "id": 6007,
+    "name": "Biscuit",
+    "position": 99
+  }
+]
