@@ -48,8 +48,6 @@
             }
         });
     }
-    var hw_HeroGetAll = null;
-    var hw_PetGetAll = null;
     var hw_ArenaFindEnemies = null;
     var hw_GrandFindEnemies = null;
     var hw_GrandArenaHistory = JSON.parse(GM_getValue("hw_GrandArenaHistory", "[]"));
@@ -83,7 +81,7 @@
         hw_css += 'min-width:510px;width:510px;\r\n';
         hw_css += '}\r\n';
         hw_css += 'td.hw-recommendation-unmatched {\r\n';
-        hw_css += 'background-color: rgba(212,212,212, 0.5);opacity:70%;\r\n';
+        hw_css += 'background-color: rgba(212,212,212, 0.8);\r\n';
         hw_css += '}\r\n';
         hw_css += 'span.hw-battle-hero-icon {\r\n';
         hw_css += 'background-size: 32px 32px;\r\nheight:32px;\r\nwidth:32px;\r\nmargin:2px;\r\n';
@@ -91,6 +89,9 @@
         hw_css += 'background-clip:padding-box;\r\n';
         hw_css += 'background-repeat:no-repeat;\r\n';
         hw_css += 'display:inline-block;\r\n';
+        hw_css += '}\r\n';
+        hw_css += 'span.hw-recommendation-unmatched {\r\n';
+        hw_css += 'opacity:60%;\r\n';
         hw_css += '}\r\n';
         hw_css += 'img.hw-battle-hero-icon {\r\n';
         hw_css += 'background-size: 32px 32px;\r\nheight:32px;\r\nwidth:32px;\r\nmargin:0;\r\n';
@@ -103,6 +104,7 @@
 
         jQuery("head").append(hw_css);
     }
+
     loadCss();
 
     function debugLog(message) {
@@ -294,35 +296,6 @@
         return jQuery('<div/>').html(value).text();
     }
 
-    function createGrandArenaBattleLog(originalLog, myUserId) {
-        if (!originalLog) {
-            return null;
-        }
-        var newLog = new Object();
-        newLog.startTime = originalLog.startTime;
-        if (myUserId == originalLog.userId) {
-            newLog.opponentId = originalLog.typeId;
-            newLog.type = "A";
-            newLog.myTeam = generateTeam(originalLog.attackers);
-            newLog.opponentTeam = generateTeam(originalLog.defenders[0]);
-            newLog.win = originalLog.result.win;
-        } else {
-            if (myUserId != originalLog.typeId) {
-                debugLog("Not defender or attacker: " + myUserId);
-                return null;
-            }
-            newLog.opponentId = originalLog.userId;
-            newLog.type = "D";
-            newLog.myTeam = generateTeam(originalLog.defenders[0]);
-            newLog.opponentTeam = generateTeam(originalLog.attackers);
-            newLog.win = !originalLog.result.win;
-       }
-        newLog.myTeamKey = generateTeamKey(newLog.myTeam);
-        newLog.opponentTeamKey = generateTeamKey(newLog.opponentTeam);
-
-        return newLog;
-    }
-
     function createArenaBattleLog(originalLog, myUserId) {
         if (!originalLog) {
             return null;
@@ -406,14 +379,43 @@
         if (log.win) {
             winCount += 1;
         }
-        existingLog.win = winCount > 1;
+        existingLog.win = winCount > 0;
 
         GM_setValue("hw_ArenaHistory", JSON.stringify(hw_ArenaHistory));
         debugLog("hw_ArenaHistory.length: " + hw_ArenaHistory.length);
     }
 
+    function createGrandArenaBattleLog(originalLog, myUserId) {
+        if (!originalLog) {
+            return null;
+        }
+        var newLog = new Object();
+        newLog.startTime = originalLog.startTime;
+        if (myUserId == originalLog.userId) {
+            newLog.opponentId = originalLog.typeId;
+            newLog.type = "A";
+            newLog.myTeam = generateTeam(originalLog.attackers);
+            newLog.opponentTeam = generateTeam(originalLog.defenders[0]);
+            newLog.win = originalLog.result.win;
+        } else {
+            if (myUserId != originalLog.typeId) {
+                debugLog("Not defender or attacker: " + myUserId);
+                return null;
+            }
+            newLog.opponentId = originalLog.userId;
+            newLog.type = "D";
+            newLog.myTeam = generateTeam(originalLog.defenders[0]);
+            newLog.opponentTeam = generateTeam(originalLog.attackers);
+            newLog.win = !originalLog.result.win;
+        }
+        newLog.myTeamKey = generateTeamKey(newLog.myTeam);
+        newLog.opponentTeamKey = generateTeamKey(newLog.opponentTeam);
+
+        return newLog;
+    }
+
     function addGrandArenaBattleLogIfNew(log, myUserId) {
-        if(!log) {
+        if (!log) {
             return;
         }
         var existingLog = null;
@@ -449,7 +451,7 @@
             hw_GrandArenaHistory.push(existingLog);
         }
         var winCount = 0;
-        for (var j = 0; j < existingLog.battles.length;j++) {
+        for (var j = 0; j < existingLog.battles.length; j++) {
             var battle = existingLog.battles[j];
             if (battle.win) {
                 winCount += 1;
@@ -564,7 +566,7 @@
             return;
         }
         var content = jQuery('<table />');
-       for (var i = 0; i < recommendation.battles.length; i++) {
+        for (var i = 0; i < recommendation.battles.length; i++) {
             var battle = recommendation.battles[i];
             var when = new Date(Number.parseInt(battle.startTime) * 1000).toLocaleString();
             var tr = jQuery('<tr />');
@@ -586,16 +588,22 @@
                     tr.addClass("hw-recommendation-lose");
                 }
                 var td = jQuery('<td />');
-                for (var l = thisBattle.myTeam.length; l--;l>= 0) {
-                    td.append(buildHeroDisplay(thisBattle.myTeam[l]));
+                for (var l = thisBattle.myTeam.length; l--; l >= 0) {
+                    td.append(buildHeroDisplay(thisBattle.myTeam[l], true));
                 }
                 tr.append(td);
                 td = jQuery('<td />');
-                if (!doesAnyTeamContainKey(opponentTeams, thisBattle.opponentTeamKey)) {
+                var team = getBestMatchingTeam(opponentTeams, thisBattle.opponentTeamKey);
+                if ((!team) || (team.key != thisBattle.opponentTeamKey)) {
                     td.addClass("hw-recommendation-unmatched");
                 }
                 for (var k = 0; k < thisBattle.opponentTeam.length; k++) {
-                    td.append(buildHeroDisplay(thisBattle.opponentTeam[k]));
+                    var opponentHero = thisBattle.opponentTeam[k];
+                    var hero = getBestMatchingHero(team, opponentHero.key);
+                    if (!hero) {
+                        hero = false;
+                    }
+                    td.append(buildHeroDisplay(opponentHero, hero.key == opponentHero.key));
                 }
                 tr.append(td);
                 content.append(tr);
@@ -607,7 +615,7 @@
         container.append(content);
     }
 
-    function displayArenaRecommendation(container, recommendation, opponentTeams) {
+    function displayArenaRecommendation(container, recommendation) {
         if (!container) {
             debugLog("displayArenaRecommendation - no container");
             return;
@@ -647,15 +655,21 @@
                 }
                 var td = jQuery('<td />');
                 for (var l = thisBattle.myTeam.length; l--; l >= 0) {
-                    td.append(buildHeroDisplay(thisBattle.myTeam[l]));
+                    td.append(buildHeroDisplay(thisBattle.myTeam[l], true));
                 }
                 tr.append(td);
                 td = jQuery('<td />');
-                if (!doesAnyTeamContainKey(opponentTeams, thisBattle.opponentTeamKey)) {
+                var team = getBestMatchingTeam(recommendation.opponentTeams, thisBattle.opponentTeamKey);
+                if ((!team) || (team.key != thisBattle.opponentTeamKey)) {
                     td.addClass("hw-recommendation-unmatched");
                 }
                 for (var k = 0; k < thisBattle.opponentTeam.length; k++) {
-                    td.append(buildHeroDisplay(thisBattle.opponentTeam[k]));
+                    var opponentHero = thisBattle.opponentTeam[k];
+                    var hero = getBestMatchingHero(team, opponentHero.key);
+                    if (!hero) {
+                        hero = false;
+                    }
+                    td.append(buildHeroDisplay(opponentHero, hero.key == opponentHero.key));
                 }
                 tr.append(td);
                 content.append(tr);
@@ -709,7 +723,7 @@
         return "Unknown: " + colorId;
     }
 
-    function buildHeroDisplay(hero) {
+    function buildHeroDisplay(hero, isMatched) {
         if (!hero) {
             return "No Hero";
         }
@@ -718,7 +732,9 @@
         content += '\');" class="hw-battle-hero-icon" />';
 
         var result = jQuery(content);
-
+        if (!isMatched) {
+            result.addClass("hw-recommendation-unmatched");
+        }
         content = '<img src="';
         content += htmlEncode(getHeroStarsImage(hero.star));
         content += '" style="background-image: url(\'';
@@ -732,36 +748,6 @@
         content += '" />';
         result.append(content);
         return result;
-    }
-
-    function doesAnyTeamContainKey(teams, key) {
-        if (!key) {
-            debugLog("doesAnyTeamContainKey - no key");
-            return false;
-        }
-        debugLog("doesAnyTeamContainKey - " + key);
-        if (!teams) {
-            debugLog("doesAnyTeamContainKey - no team");
-            return false;
-        }
-        debugLog("doesAnyTeamContainKey - has team");
-        if (!teams.length) {
-            debugLog("doesAnyTeamContainKey - team empty");
-            return false;
-        }
-        debugLog("doesAnyTeamContainKey - start loop");
-        for (var i = 0; i < teams.length; i++) {
-            if (!teams[i].key) {
-                teams[i].key = generateTeamKey(teams[i]);
-            }
-            debugLog(teams[i].key);
-            if (key == teams[i].key) {
-                debugLog("Match - " + teams[i].key);
-                return true;
-            }
-        }
-        debugLog("doesAnyTeamContainKey - no match");
-       return false;
     }
 
     function getBestMatchingTeam(teams, key) {
@@ -787,15 +773,50 @@
                 teams[i].key = generateTeamKey(teams[i]);
             }
             debugLog(teams[i].key);
+            if (teams[i].key == key) {
+                return teams[i];
+            }
             var newScore = calculateLevenshteinDistance(teams[i].key, key);
             if (newScore < bestScore) {
                 debugLog("Better - " + teams[i].key);
                 bestScore = newScore;
                 bestTeam = teams[i];
-                return true;
             }
         }
         return bestTeam;
+    }
+
+    function getBestMatchingHero(heros, key) {
+        if (!key) {
+            debugLog("getBestMatchingHero - no key");
+            return null;
+        }
+        debugLog("getBestMatchingHero - " + key);
+        if (!heros) {
+            debugLog("getBestMatchingHero - no heros");
+            return null;
+        }
+        debugLog("getBestMatchingHero - has heros");
+        if (!heros.length) {
+            debugLog("getBestMatchingHero - heros empty");
+            return null;
+        }
+        debugLog("getBestMatchingHero - start loop");
+        var bestHero = heros[0];
+        var bestScore = 999999999;
+        for (var i = 0; i < heros.length; i++) {
+            debugLog(heros[i].key);
+            if (heros[i].key == key) {
+                return heros[i];
+            }
+            var newScore = calculateLevenshteinDistance(heros[i].key, key);
+            if (newScore < bestScore) {
+                debugLog("Better - " + heros[i].key);
+                bestScore = newScore;
+                bestHero = heros[i];
+            }
+        }
+        return bestHero;
     }
 
     function setupGrandArenaRecommendations(enemies) {
@@ -824,7 +845,7 @@
             var th = jQuery('<th class="hw-recommendation"></th>');
             var txt = results[k].userName + " " + results[k].wins;
             if (results[k].place) {
-                txt = "[" + results[k].place  + "] - " + txt;
+                txt = "[" + results[k].place + "] - " + txt;
             }
             th.text(txt);
             results[k].header = th;
@@ -847,7 +868,7 @@
         debugLog(enemies);
         if (!enemies || !enemies.length) {
             debugLog("setupArenaRecommendations - invalid");
-           return;
+            return;
         }
         debugLog("setupArenaRecommendations - incomplete");
         //return;
@@ -1017,23 +1038,6 @@
         return null;
     }
 
-    function heroGetAllHookup(httpReq, ident) {
-        hw_HeroGetAll = null;
-        httpReq.addEventListener("readystatechange", function (evt) {
-            if (!isReady(this)) {
-                return;
-            }
-            debugLog("heroGetAllHookup - ready");
-            var jsonObj = extractResultsArray(this);
-            if (!jsonObj) { return; }
-            var x = extractResultsByIdent(jsonObj, ident);
-            debugLog(x);
-            hw_HeroGetAll = x.response;
-            //Problem - this is not an array, needs to be mapped somehow.
-
-        });
-    }
-
     function extractResultsByIdent(result, ident) {
         if (!result) {
             debugLog("extractResultsByIdent - no result");
@@ -1041,7 +1045,7 @@
         }
         if (!ident) {
             debugLog("extractResultsByIdent - no ident");
-           return null;
+            return null;
         }
         for (var j = 0; j < result.length; j++) {
             if (result[j].ident == ident) {
@@ -1050,21 +1054,6 @@
         }
         debugLog("extractResultsByIdent - no match");
         return null;
-    }
-
-    function petGetAllHookup(httpReq, ident) {
-        hw_PetGetAll = null;
-        httpReq.addEventListener("readystatechange", function (evt) {
-            if (!isReady(this)) {
-                return;
-            }
-            debugLog("petGetAllHookup - ready");
-            var jsonObj = extractResultsArray(this);
-            if (!jsonObj) { return; }
-            var x = extractResultsByIdent(jsonObj, ident);
-            debugLog(x);
-            hw_PetGetAll = x.response;
-        });
     }
 
     function grandFindEnemiesHookup(httpReq, ident) {
@@ -1172,41 +1161,6 @@
         });
     }
 
-    function arenaAttackHookup(httpReq, ident) {
-        if (!ident) {
-            debugLog("arenaAttack - ident NULL");
-            return;
-        }
-        httpReq.addEventListener("readystatechange", function (evt) {
-            if (!isReady(this)) {
-                return;
-            }
-            debugLog("arenaAttack - ready");
-            var jsonObj = extractResultsArray(this);
-            if (!jsonObj) { return; }
-
-            var x = extractResultsByIdent(jsonObj, ident);
-            debugLog(x);
-            if (!x) {
-                debugLog("arenaAttackHookup: results not found");
-                return;
-            }
-            if (!x.response) {
-                debugLog("arenaAttackHookup: results.response not found");
-                return;
-            }
-            x = x.response;
-            if (!x.battles) {
-                debugLog("arenaAttackHookup: results.response.battles not found");
-                return;
-            }
-            x = x.battles;
-            for (var j = 0; j < x.length; j++) {
-                addArenaBattleLogIfNew(createArenaBattleLog(x[j], getUserId(httpReq)), getUserId(httpReq));
-            }
-        });
-    }
-
     (function (send) {
         XMLHttpRequest.prototype.send = function (data) {
             try {
@@ -1231,10 +1185,10 @@
                     debugLog('Entered send - ' + name + " / " + ident);
                     switch (name) {
                         case "heroGetAll":
-                            heroGetAllHookup(this, ident);
+                            //heroGetAllHookup(this, ident);
                             break;
                         case "pet_getAll":
-                            petGetAllHookup(this, ident);
+                            //petGetAllHookup(this, ident);
                             break;
                         case "grandFindEnemies":
                             grandFindEnemiesHookup(this, ident);
