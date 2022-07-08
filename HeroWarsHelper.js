@@ -82,7 +82,7 @@
         hw_css += 'min-width:510px;width:510px;\r\n';
         hw_css += '}\r\n';
         hw_css += 'td.hw-recommendation-unmatched {\r\n';
-        hw_css += 'background-color: rgba(212,212,212, 0.8);\r\n';
+        hw_css += 'background-color: rgba(212,212,212, 0.85);\r\n';
         hw_css += '}\r\n';
         hw_css += 'span.hw-battle-hero-icon {\r\n';
         hw_css += 'background-size: 32px 32px;\r\nheight:32px;\r\nwidth:32px;\r\nmargin:2px;\r\n';
@@ -297,6 +297,28 @@
         return jQuery('<div/>').html(value).text();
     }
 
+    function displayDateTime(value) {
+        if (!value) {
+            return "";
+        }
+        const locale = null;
+        const options = {
+            day:"2-digit",
+            month: "short",
+            year:"numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+        };
+        try {
+            return value.toLocaleString(locale, options);
+        } catch {
+            try {
+                return value.toLocaleString();
+            } catch { return value.toString(); }
+        }
+    }
+
     function createArenaBattleLog(originalLog, myUserId) {
         if (!originalLog) {
             return null;
@@ -352,7 +374,8 @@
                     debugLog("Arena History Sort in wrong order, correcting");
                 }
                 while (hw_ArenaHistory.length > max_HistorySize) {
-                    hw_ArenaHistory.shift();
+                    var ex = hw_ArenaHistory.shift();
+                    debugLog("addArenaBattleLogIfNew Removing: " + ex.opponentId + ", " + displayDateTime(new Date(Number.parseInt(ex.startTime) * 1000)));
                 }
             }
             existingLog = new Object();
@@ -441,7 +464,8 @@
                     debugLog("Grand Arena History Sort in wrong order, correcting");
                 }
                 while (hw_GrandArenaHistory.length > max_HistorySize) {
-                    hw_GrandArenaHistory.shift();
+                    var ex = hw_GrandArenaHistory.shift();
+                    debugLog("addGrandArenaBattleLogIfNew Removing: " + ex.opponentId + ", " + displayDateTime(new Date(Number.parseInt(ex.startTime) * 1000)));
                 }
             }
             existingLog = new Object();
@@ -484,8 +508,13 @@
 
     function getGrandArenaRecommendation(enemy) {
         var result = new Object();
-        result.userId = enemy.user.id;
-        result.userName = enemy.user.name;
+        if (enemy.user) {
+            result.userId = enemy.user.id;
+            result.userName = enemy.user.name;
+        } else {
+            result.userId = 0;
+            result.userName = "Missing User";
+        }
         result.place = enemy.place;
         result.opponentTeams = new Array();
         debugLog("getGrandArenaRecommendation");
@@ -569,7 +598,7 @@
         var content = jQuery('<table />');
         for (var i = 0; i < recommendation.battles.length; i++) {
             var battle = recommendation.battles[i];
-            var when = new Date(Number.parseInt(battle.startTime) * 1000).toLocaleString();
+            var when = displayDateTime(new Date(Number.parseInt(battle.startTime) * 1000));
             var tr = jQuery('<tr />');
             if (battle.win) {
                 tr.addClass("hw-recommendation-win");
@@ -635,7 +664,7 @@
         var content = jQuery('<table />');
         for (var i = 0; i < recommendation.battles.length; i++) {
             var battle = recommendation.battles[i];
-            var when = new Date(Number.parseInt(battle.startTime) * 1000).toLocaleString();
+            var when = displayDateTime(new Date(Number.parseInt(battle.startTime) * 1000));
             var tr = jQuery('<tr />');
             if (battle.win) {
                 tr.addClass("hw-recommendation-win");
@@ -940,6 +969,24 @@
         return result;
     }
 
+    function extractResultsByIdent(result, ident) {
+        if (!result) {
+            debugLog("extractResultsByIdent - no result");
+            return null;
+        }
+        if (!ident) {
+            debugLog("extractResultsByIdent - no ident");
+            return null;
+        }
+        for (var j = 0; j < result.length; j++) {
+            if (result[j].ident == ident) {
+                return result[j].result;
+            }
+        }
+        debugLog("extractResultsByIdent - no match");
+        return null;
+    }
+
     function extractGrandArenaEnemies(jsonObj) {
         if ((!jsonObj)) {
             debugLog("extractGrandArenaEnemies - no results");
@@ -1036,24 +1083,6 @@
         catch (err) {
             debugLog(err);
         }
-        return null;
-    }
-
-    function extractResultsByIdent(result, ident) {
-        if (!result) {
-            debugLog("extractResultsByIdent - no result");
-            return null;
-        }
-        if (!ident) {
-            debugLog("extractResultsByIdent - no ident");
-            return null;
-        }
-        for (var j = 0; j < result.length; j++) {
-            if (result[j].ident == ident) {
-                return result[j].result;
-            }
-        }
-        debugLog("extractResultsByIdent - no match");
         return null;
     }
 
