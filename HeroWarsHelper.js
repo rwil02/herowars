@@ -14,7 +14,8 @@
 
 (function () {
     'use strict';
-    const base_Url = 'https://raw.githubusercontent.com/rwil02/herowars/main/Resources/';
+    const base_Url = 'https://raw.githubusercontent.com/rwil02/herowars/main/';
+    const resource_Url = base_Url + 'Resources/';
     const max_HistorySize = 700;
 
     try { GM_xmlhttpRequest = GM_xmlhttpRequest || this.GM_xmlhttpRequest; } catch (e) { GM_xmlhttpRequest = false; }
@@ -23,7 +24,7 @@
     if (GM_xmlhttpRequest) {
         GM_xmlhttpRequest({
             method: "GET",
-            url: base_Url + "heros.json",
+            url: resource_Url + "heros.json",
             headers: {
                 "Accept": "text/json" // If not specified, browser defaults will be used.
             },
@@ -45,6 +46,21 @@
 
             }
         });
+        GM_xmlhttpRequest({
+            method: "GET",
+            url: base_Url + "HeroWarsHelper.css",
+            headers: {
+                "Accept": "text/css" // If not specified, browser defaults will be used.
+            },
+            responseType: "document",
+            onload: function (response) {
+                // Attempt to create responseXML, if absent, in supported browsers
+                var hw_css = '<style>\r\n';
+                hw_css += response.responseText;
+                hw_css += '\r\n</style>';
+                jQuery("head").append(hw_css);
+            }
+        });
     }
     var hw_ArenaFindEnemies = null;
     var hw_GrandFindEnemies = null;
@@ -53,60 +69,6 @@
     var hw_UserId = Number.parseInt(GM_getValue("hw_UserId", ""));
 
     var hw_GA_Recommend = null;
-    function loadCss() {
-
-        jQuery('head').append(jQuery('<link rel="stylesheet" type="text/css" />').attr('href', base_Url + 'HeroWarsHelper.css'));
-        return;
-        var hw_css = '<style>\r\n';
-
-        hw_css += 'div.hw-recommendation-head {\r\n';
-        hw_css += 'text-align:center;\r\nwidth:520px;\r\npadding:5px;\r\n';
-        hw_css += 'position:absolute;\r\ntop:50px;\r\nright:5px;z-index:999;\r\n';
-        hw_css += '}\r\n';
-        hw_css += 'table.hw-recommendation {\r\n';
-        hw_css += 'margin: 0 auto;border:0;color:white;width:460px;"\r\n';
-        hw_css += '}\r\n';
-        hw_css += 'tr.hw-recommendation-win {\r\n';
-        hw_css += 'background-color: #008000;"\r\n';
-        hw_css += '}\r\n';
-        hw_css += 'tr.hw-recommendation-lose {\r\n';
-        hw_css += 'background-color: #800000;"\r\n';
-        hw_css += '}\r\n';
-        hw_css += 'th.hw-recommendation {\r\n';
-        hw_css += 'text-align:center;font-weight:bold;\r\n';
-        hw_css += 'margin:3px;padding:3px;border-radius:12px;\r\n';
-        hw_css += 'border:#ddddff solid 1px;color:#ffffff;background-color:#ccccff;\r\n';
-        hw_css += '}\r\n';
-        hw_css += 'div.hw-recommendation {\r\n';
-        hw_css += 'overflow-y:auto;\r\nscrollbar-width:thin;\r\n';
-        hw_css += 'min-width:510px;width:510px;\r\n';
-        hw_css += '}\r\n';
-        hw_css += 'td.hw-recommendation-unmatched {\r\n';
-        hw_css += 'background-color: rgba(212,212,212, 0.85);\r\n';
-        hw_css += '}\r\n';
-        hw_css += 'span.hw-battle-hero-icon {\r\n';
-        hw_css += 'background-size: 32px 32px;\r\nheight:32px;\r\nwidth:32px;\r\nmargin:2px;\r\n';
-        hw_css += 'background-position:center;\r\n';
-        hw_css += 'background-clip:padding-box;\r\n';
-        hw_css += 'background-repeat:no-repeat;\r\n';
-        hw_css += 'display:inline-block;\r\n';
-        hw_css += '}\r\n';
-        hw_css += 'span.hw-recommendation-unmatched {\r\n';
-        hw_css += 'opacity:60%;\r\n';
-        hw_css += '}\r\n';
-        hw_css += 'img.hw-battle-hero-icon {\r\n';
-        hw_css += 'background-size: 32px 32px;\r\nheight:32px;\r\nwidth:32px;\r\nmargin:0;\r\n';
-        hw_css += 'background-position:center;\r\n';
-        hw_css += 'background-clip:padding-box;\r\n';
-        hw_css += 'background-repeat:no-repeat;\r\n';
-        hw_css += 'display:inline-block;\r\n';
-        hw_css += '}\r\n';
-        hw_css += '</style>';
-
-        jQuery("head").append(hw_css);
-    }
-
-    loadCss();
 
     function debugLog(message) {
         const DEBUG = true;
@@ -261,7 +223,7 @@
         for (var i = 0; i < hw_HeroList.length; i++) {
             var x = hw_HeroList[i];
             if (x.id == heroid) {
-                return base_Url + (x.image ?? "No ID matched: " + heroid);
+                return resource_Url + (x.image ?? "No ID matched: " + heroid);
             }
         }
         return "No ID matched: " + heroid;
@@ -274,7 +236,7 @@
             }
             return "No color passed";
         }
-        return base_Url + ("Frames/Hero_" + color + ".png");
+        return resource_Url + ("Frames/Hero_" + color + ".png");
 
     }
 
@@ -285,7 +247,7 @@
             }
             return "No stars passed";
         }
-        return base_Url + ("stars_" + stars + ".png");
+        return resource_Url + ("stars_" + stars + ".png");
 
     }
 
