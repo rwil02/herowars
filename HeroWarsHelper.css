@@ -1,0 +1,73 @@
+
+div.hw-recommendation-head {
+    text-align: center;
+    width: 520px;
+    padding: 5px;
+    position: absolute;
+    top: 50px;
+    right: 5px;
+    z-index: 999;
+}
+
+table.hw-recommendation {
+    margin: 0 auto;
+    border: 0;
+    color: white;
+    width: 460px;
+}
+
+tr.hw-recommendation-win {
+    background-color: #008000;
+}
+
+tr.hw-recommendation-lose {
+    background-color: #800000;
+}
+
+th.hw-recommendation {
+    text-align: center;
+    font-weight: bold;
+    margin: 3px;
+    padding: 3px;
+    border-radius: 12px;
+    border: #ddddff solid 1px;
+    color: #ffffff;
+    background-color: #ccccff;
+}
+
+div.hw-recommendation {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    min-width: 510px;
+    width: 510px;
+}
+
+td.hw-recommendation-unmatched {
+    background-color: rgba(212,212,212, 0.85);
+}
+
+span.hw-battle-hero-icon {
+    background-size: 32px 32px;
+    height: 32px;
+    width: 32px;
+    margin: 2px;
+    background-position: center;
+    background-clip: padding-box;
+    background-repeat: no-repeat;
+    display: inline-block;
+}
+
+span.hw-recommendation-unmatched {
+    opacity: 60%;
+}
+
+img.hw-battle-hero-icon {
+    background-size: 32px 32px;
+    height: 32px;
+    width: 32px;
+    margin: 0;
+    background-position: center;
+    background-clip: padding-box;
+    background-repeat: no-repeat;
+    display: inline-block;
+}

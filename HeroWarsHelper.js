@@ -54,6 +54,9 @@
 
     var hw_GA_Recommend = null;
     function loadCss() {
+
+        jQuery('head').append(jQuery('<link rel="stylesheet" type="text/css" />').attr('href', base_Url + 'HeroWarsHelper.css'));
+        return;
         var hw_css = '<style>\r\n';
 
         hw_css += 'div.hw-recommendation-head {\r\n';
