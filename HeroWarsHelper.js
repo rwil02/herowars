@@ -1,24 +1,21 @@
 // ==UserScript==
 // @name         Hero Wars Helper
 // @namespace    http://l-space-design.com/
-// @version      0.4
+// @version      0.5
 // @description  Get Hero Data for Hero Wars
 // @author       Roger Willcocks
 // @match        https://*.hero-wars.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=hero-wars.com
 // @require      http://code.jquery.com/jquery-3.4.1.min.js
-// @resource     HERO_LIST https://raw.githubusercontent.com/rwil02/herowars/main/Resources/heros.json
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
 // @grant        GM_getValue
-// @grant        GM_getResourceText
-// @grant        GM_setClipboard
 // ==/UserScript==
 
 (function () {
     'use strict';
     const base_Url = 'https://raw.githubusercontent.com/rwil02/herowars/main/Resources/';
-    const max_HistorySize = 500;
+    const max_HistorySize = 700;
 
     try { GM_xmlhttpRequest = GM_xmlhttpRequest || this.GM_xmlhttpRequest; } catch (e) { GM_xmlhttpRequest = false; }
 
