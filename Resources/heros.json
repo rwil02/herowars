@@ -382,5 +382,11 @@
     "id": 6007,
     "name": "Biscuit",
     "position": 99
+  },
+  {
+    "image": "Avatars/Khorus.png",
+    "id": 6008,
+    "name": "Khorus",
+    "position": 99
   }
 ]

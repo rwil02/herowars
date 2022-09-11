@@ -54,7 +54,6 @@
             },
             responseType: "document",
             onload: function (response) {
-                // Attempt to create responseXML, if absent, in supported browsers
                 var hw_css = '<style>\r\n';
                 hw_css += response.responseText;
                 hw_css += '\r\n</style>';
@@ -559,6 +558,9 @@
         }
         var content = jQuery('<table />');
         for (var i = 0; i < recommendation.battles.length; i++) {
+            if (i >= 5) {
+                break;
+            }
             var battle = recommendation.battles[i];
             var when = displayDateTime(new Date(Number.parseInt(battle.startTime) * 1000));
             var tr = jQuery('<tr />');
@@ -625,6 +627,9 @@
         }
         var content = jQuery('<table />');
         for (var i = 0; i < recommendation.battles.length; i++) {
+            if (i >= 5) {
+                break;
+            }
             var battle = recommendation.battles[i];
             var when = displayDateTime(new Date(Number.parseInt(battle.startTime) * 1000));
             var tr = jQuery('<tr />');
