@@ -331,8 +331,20 @@
   },
   {
     "image": "Avatars/Tristan.png",
-    "id": null,
+    "id": 57,
     "name": "Tristan",
+    "position": 12
+  },
+  {
+    "image": "Avatars/Aidan.png",
+    "id": 58,
+    "name": "Aidan",
+    "position": 45
+  },
+  {
+    "image": "Avatars/Kayla.png",
+    "id": 59,
+    "name": "Kayla",
     "position": 10
   },
   {

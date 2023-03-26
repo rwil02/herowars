@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hero Wars Helper
 // @namespace    http://l-space-design.com/
-// @version      0.5
+// @version      0.6
 // @description  Get Hero Data for Hero Wars
 // @author       Roger Willcocks
 // @match        https://*.hero-wars.com/*
@@ -968,25 +968,30 @@
             debugLog("extractGrandArenaEnemies - no response length");
             return null;
         }
+        if (!x[0].userId) {
+            debugLog("extractGrandArenaEnemies - no user id");
+            return null;
+        }
+        var place = parseInt(x[0].place);
+        if (!place) {
+            debugLog("extractGrandArenaEnemies - no place");
+            return null;
+        }
         if (!x[0].heroes) {
             debugLog("extractGrandArenaEnemies - no heroes");
             return null;
         }
         if (x[0].heroes.length != 3) {
-            debugLog("extractGrandArenaEnemies - wrong number of teams");
-            return null;
+            if (place > 100) {
+                debugLog("extractGrandArenaEnemies - wrong number of teams");
+                return null;
+            }
         }
         if (!x[0].heroes[0].length) {
-            debugLog("extractGrandArenaEnemies - no heroes in teams");
-            return null;
-        }
-        if (!x[0].place) {
-            debugLog("extractGrandArenaEnemies - no place");
-            return null;
-        }
-        if (!x[0].userId) {
-            debugLog("extractGrandArenaEnemies - no user id");
-            return null;
+            if (place > 10) {
+                debugLog("extractGrandArenaEnemies - no heroes in teams");
+                return null;
+            }
         }
         return x;
     }
