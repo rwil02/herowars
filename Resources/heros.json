@@ -348,6 +348,12 @@
     "position": 10
   },
   {
+    "image": "Avatars/Polaris.png",
+    "id": 62,
+    "name": "Polaris",
+    "position": 10
+  },
+  {
     "image": "Avatars/Fenris.png",
     "id": 6000,
     "name": "Fenris",
