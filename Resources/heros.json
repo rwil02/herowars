@@ -336,6 +336,12 @@
     "position": 12
   },
   {
+    "image": "Avatars/Fafnir.png",
+    "id": 57,
+    "name": "Fafnir",
+    "position": 60
+  },
+  {
     "image": "Avatars/Aidan.png",
     "id": 58,
     "name": "Aidan",
@@ -345,6 +351,12 @@
     "image": "Avatars/Kayla.png",
     "id": 59,
     "name": "Kayla",
+    "position": 10
+  },
+  {
+    "image": "Avatars/Mushroom.png",
+    "id": 60,
+    "name": "Mushy and Shroom",
     "position": 10
   },
   {
