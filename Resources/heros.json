@@ -418,5 +418,11 @@
     "id": 6008,
     "name": "Khorus",
     "position": 99
+  },
+  {
+    "image": "Avatars/Vex.png",
+    "id": 6009,
+    "name": "Vex",
+    "position": 99
   }
 ]
