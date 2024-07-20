@@ -366,6 +366,12 @@
     "position": 10
   },
   {
+    "image": "Avatars/LaraCroft.png",
+    "id": 63,
+    "name": "Lara Croft",
+    "position": 10
+  },
+  {
     "image": "Avatars/Fenris.png",
     "id": 6000,
     "name": "Fenris",
