@@ -384,6 +384,12 @@
     "position": 45
   },
   {
+    "image": "Avatars/NinjaTurtles.png",
+    "id": 65,
+    "name": "Ninja Turtles",
+    "position": 1
+  },
+  {
     "image": "Avatars/Fenris.png",
     "id": 6000,
     "name": "Fenris",
