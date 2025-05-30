@@ -29,10 +29,17 @@ th.hw-recommendation {
     font-weight: bold;
     margin: 3px;
     padding: 3px;
-    border-radius: 12px;
     border: #ddddff solid 1px;
     color: #ffffff;
     background-color: #ccccff;
+}
+
+th.hw-recommendation:first-child {
+    border-radius: 12px 0 0 12px;
+}
+
+th.hw-recommendation:last-child {
+    border-radius: 0 12px 12px 0;
 }
 
 div.hw-recommendation {
