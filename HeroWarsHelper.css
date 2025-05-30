@@ -47,9 +47,9 @@ td.hw-recommendation-unmatched {
 }
 
 span.hw-battle-hero-icon {
-    background-size: 28px 28px;
-    height: 28px;
-    width: 28px;
+    background-size: 30px 30px;
+    height: 30px;
+    width: 30px;
     margin: 2px;
     background-position: center;
     background-clip: padding-box;
@@ -62,9 +62,9 @@ span.hw-recommendation-unmatched {
 }
 
 img.hw-battle-hero-icon {
-    background-size: 28px 28px;
-    height: 28px;
-    width: 28px;
+    background-size: 30px 30px;
+    height: 30px;
+    width: 30px;
     margin: 0;
     background-position: center;
     background-clip: padding-box;
