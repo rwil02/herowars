@@ -17,6 +17,9 @@
     const base_Url = 'https://raw.githubusercontent.com/rwil02/herowars/main/';
     const resource_Url = base_Url + 'Resources/';
     const max_HistorySize = 700;
+    const DEBUG = false;
+    const INFO = true;
+    const WARNING = true;
 
     try { GM_xmlhttpRequest = GM_xmlhttpRequest || this.GM_xmlhttpRequest; } catch (e) { GM_xmlhttpRequest = false; }
 
@@ -70,8 +73,19 @@
     var hw_GA_Recommend = null;
 
     function debugLog(message) {
-        const DEBUG = true;
         if (!DEBUG) {
+            return;
+        }
+        console.log(message);
+    }
+    function infoLog(message) {
+        if (!INFO) {
+            return;
+        }
+        console.log(message);
+    }
+    function warningLog(message) {
+        if (!WARNING) {
             return;
         }
         console.log(message);
@@ -338,7 +352,7 @@
                 }
                 while (hw_ArenaHistory.length > max_HistorySize) {
                     var ex = hw_ArenaHistory.shift();
-                    debugLog("addArenaBattleLogIfNew Removing: " + ex.opponentId + ", " + displayDateTime(new Date(Number.parseInt(ex.startTime) * 1000)));
+                    infoLog("addArenaBattleLogIfNew Removing: " + ex.opponentId + ", " + displayDateTime(new Date(Number.parseInt(ex.startTime) * 1000)));
                 }
             }
             existingLog = new Object();
@@ -556,15 +570,15 @@
 
     function displayGrandArenaRecommendation(container, recommendation, opponentTeams) {
         if (!container) {
-            debugLog("displayGrandArenaRecommendation - no container");
+            warningLog("displayGrandArenaRecommendation - no container");
             return;
         }
         if (!recommendation) {
-            debugLog("displayGrandArenaRecommendation - no recommendation");
+            warningLog("displayGrandArenaRecommendation - no recommendation");
             return;
         }
         if (!recommendation.battles) {
-            debugLog("displayGrandArenaRecommendation - no battles");
+            warningLog("displayGrandArenaRecommendation - no battles");
             return;
         }
         if (!recommendation.battles.length) {
@@ -625,15 +639,15 @@
 
     function displayArenaRecommendation(container, recommendation) {
         if (!container) {
-            debugLog("displayArenaRecommendation - no container");
+            warningLog("displayArenaRecommendation - no container");
             return;
         }
         if (!recommendation) {
-            debugLog("displayArenaRecommendation - no recommendation");
+            warningLog("displayArenaRecommendation - no recommendation");
             return;
         }
         if (!recommendation.battles) {
-            debugLog("displayArenaRecommendation - no battles");
+            warningLog("displayArenaRecommendation - no battles");
             return;
         }
         if (!recommendation.battles.length) {
@@ -898,21 +912,40 @@
     function setupRecommendationsHeaders(results, thead) {
         for (var k = 0; k < results.length; k++) {
             var tr = jQuery('<tr></tr>');
-            var th = jQuery('<th class="hw-recommendation" style="text-align:left;white-space: nowrap;"></th>');
+            var th = jQuery('<th class="hw-recommendation" style="text-align:left;white-space:nowrap;min-width:40px;"></th>');
+            var winStyle = '';
+            if (results[k].winPercent > 0.5) {
+                winStyle = "#204020";
+                if (results[k].winPercent > 0.75) {
+                    winStyle = "#206020";
+                    if (results[k].winPercent > 0.85) {
+                        winStyle = "#208020";
+                    }
+                }
+            };
             var txt = results[k].wins;
             th.text(txt);
+            if (winStyle.length > 2) {
+                th.css("background-color", winStyle);
+            }
             tr.append(th);
             th = jQuery('<th class="hw-recommendation" style="width:100%;"></th>');
             txt = results[k].userName;
             th.text(txt);
+            if (winStyle.length > 2) {
+                th.css("background-color", winStyle);
+            }
             tr.append(th);
 
-            th = jQuery('<th class="hw-recommendation" style="text-align:right;white-space: nowrap;"></th>');
-            txt = '';
+            th = jQuery('<th class="hw-recommendation" style="text-align:right;white-space:nowrap;min-width:40px;"></th>');
+            txt = ' ';
             if (results[k].place) {
                 txt = "[" + results[k].place + "]";
             }
             th.text(txt);
+            if (winStyle.length > 2) {
+                th.css("background-color", winStyle);
+            }
             tr.append(th);
             results[k].header = tr;
             thead.append(tr);
