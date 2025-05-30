@@ -34,6 +34,8 @@ th.hw-recommendation {
     padding: 3px;
     color: #ffffff;
     background-color: #ccccff;
+    margin: 0;
+    border: none;
 }
 
 th.hw-recommendation:first-child {
