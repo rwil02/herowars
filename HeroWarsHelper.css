@@ -23,10 +23,12 @@ tr.hw-recommendation-win {
 tr.hw-recommendation-lose {
     background-color: #800000;
 }
+
 tr.hw-recommendation {
     margin: 3px;
 }
-th .hw-recommendation {
+
+th.hw-recommendation {
     text-align: center;
     font-weight: bold;
     padding: 3px;
