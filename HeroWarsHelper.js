@@ -900,14 +900,23 @@
         t.append(thead);
         for (var k = 0; k < results.length; k++) {
             var tr = jQuery('<tr></tr>');
-            var th = jQuery('<th class="hw-recommendation"></th>');
-            var txt = results[k].userName + " " + results[k].wins;
+            var th = jQuery('<th class="hw-recommendation" style="text-align:left;white-space: nowrap;"></th>');
+            var txt = '';
             if (results[k].place) {
-                txt = "[" + results[k].place + "] - " + txt;
+                txt = "[" + results[k].place + "]";
             }
             th.text(txt);
-            results[k].header = th;
             tr.append(th);
+            th = jQuery('<th class="hw-recommendation" style="width:100%;"></th>');
+            txt = results[k].userName;
+            th.text(txt);
+            tr.append(th);
+
+            th = jQuery('<th class="hw-recommendation" style="text-align:right;white-space: nowrap;"></th>');
+            txt = results[k].wins;
+            th.text(txt);
+            tr.append(th);
+            results[k].header = tr;
             thead.append(tr);
         }
         for (var j = 0; j < results.length; j++) {
@@ -929,7 +938,7 @@
                 allResults[i].header.css('background-color', '');
             }
             body.show();
-            header.css('background-color', '#000000');
+            header.css('background-color', '#333333');
         });
 
         setTimeout(function () { body.hide(); header.hide(); }, 90000);

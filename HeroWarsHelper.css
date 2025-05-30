@@ -29,18 +29,19 @@ th.hw-recommendation {
     font-weight: bold;
     margin: 3px;
     padding: 3px;
-    border: #ddddff solid 1px;
     color: #ffffff;
     background-color: #ccccff;
 }
 
 th.hw-recommendation:first-child {
     border-radius: 12px 0 0 12px;
+    padding-left: 14px;
 }
 
-th.hw-recommendation:last-child {
-    border-radius: 0 12px 12px 0;
-}
+    th.hw-recommendation:last-child {
+        border-radius: 0 12px 12px 0;
+        padding-right: 14px;
+    }
 
 th.hw-recommendation:first-child:last-child {
     border-radius: 12px;
