@@ -504,7 +504,13 @@
         }
         battles.sort((a, b) => { b.startTime - a.startTime });
         result.battles = battles.sort((a, b) => { return b.startTime - a.startTime; });
-        result.wins = winCount + " / " + battles.length;
+        if (result.battles && result.battles.length) {
+            result.winPercent = winCount / battles.length;
+            result.wins = winCount + " / " + battles.length;
+        } else {
+            result.wins = "";
+            result.winPercent = 0;
+        }
 
         return result;
     }
@@ -537,7 +543,13 @@
         }
         battles.sort((a, b) => { b.startTime - a.startTime });
         result.battles = battles.sort((a, b) => { return b.startTime - a.startTime; });
-        result.wins = winCount + " / " + battles.length;
+        if (result.battles && result.battles.length) {
+            result.winPercent = winCount / battles.length;
+            result.wins = winCount + " / " + battles.length;
+        } else {
+            result.wins = "";
+            result.winPercent = 0;
+        }
 
         return result;
     }
