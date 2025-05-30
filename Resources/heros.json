@@ -390,6 +390,12 @@
     "position": 1
   },
   {
+    "image": "Avatars/Lyria.png",
+    "id": 67,
+    "name": "Lyria",
+    "position": 9
+  },
+  {
     "image": "Avatars/Fenris.png",
     "id": 6000,
     "name": "Fenris",
