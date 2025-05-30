@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hero Wars Helper
 // @namespace    http://l-space-design.com/
-// @version      0.6
+// @version      0.7
 // @description  Get Hero Data for Hero Wars
 // @author       Roger Willcocks
 // @match        https://*.hero-wars.com/*
@@ -228,15 +228,17 @@
         return "No ID matched: " + heroid;
     }
 
-    function getHeroFrameImage(color) {
+    function getHeroFrameImage(color, id) {
         if (!color) {
             if (color == 0) {
                 return color;
             }
             return "No color passed";
         }
+        if (id > 5999) {
+            return resource_Url + ("Frames/Hero_" + color + ".png");
+        }
         return resource_Url + ("Frames/Hero_" + color + ".png");
-
     }
 
     function getHeroStarsImage(stars) {
@@ -735,7 +737,7 @@
         content = '<img src="';
         content += htmlEncode(getHeroStarsImage(hero.star));
         content += '" style="background-image: url(\'';
-        content += htmlEncode(getHeroFrameImage(hero.color));
+        content += htmlEncode(getHeroFrameImage(hero.color, hero.id));
         content += '\')';
         content += '" class="hw-battle-hero-icon" title="';
         content += htmlEncode(getHeroName(hero.id));
@@ -1191,7 +1193,12 @@
                 if (!data) {
                     return;
                 }
-                var dataStr = String.fromCharCode.apply(null, new Uint8Array(data));
+                var dataStr = null;
+                if (typeof data === "string") {
+                    dataStr = data.trim();
+                } else if (data instanceof ArrayBuffer || ArrayBuffer.isView(data)) {
+                    dataStr = String.fromCharCode.apply(null, new Uint8Array(data)).trim();
+                }
                 if (!(dataStr && dataStr.length > 5)) {
                     return;
                 }

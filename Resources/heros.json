@@ -396,6 +396,12 @@
     "position": 9
   },
   {
+    "image": "Avatars/Folio.png",
+    "id": 67,
+    "name": "Folio",
+    "position": 37
+  },
+  {
     "image": "Avatars/Fenris.png",
     "id": 6000,
     "name": "Fenris",
