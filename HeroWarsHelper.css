@@ -24,14 +24,11 @@ tr.hw-recommendation-lose {
     background-color: #800000;
 }
 
-tr.hw-recommendation {
+th.hw-recommendation {
     border-radius: 12px;
     border: #ddddff solid 1px;
     color: #ffffff;
     background-color: #ccccff;
-}
-
-th.hw-recommendation {
     text-align: center;
     font-weight: bold;
     margin: 3px;
