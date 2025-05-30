@@ -38,8 +38,8 @@ th.hw-recommendation {
 div.hw-recommendation {
     overflow-y: auto;
     scrollbar-width: thin;
-    min-width: 490px;
-    width: 490px;
+    min-width: 430px;
+    width: 430px;
 }
 
 td.hw-recommendation-unmatched {
