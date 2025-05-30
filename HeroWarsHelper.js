@@ -1202,6 +1202,11 @@
                 if (!(dataStr && dataStr.length > 5)) {
                     return;
                 }
+                if (dataStr[0] != '{') {
+                    if (dataStr[0] != '[') {
+                        return;
+                    }
+                }
                 var calls = JSON.parse(dataStr);
                 if ((calls.calls) && (calls.calls.length)) {
                     calls = calls.calls;
