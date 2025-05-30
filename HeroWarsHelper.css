@@ -25,14 +25,14 @@ tr.hw-recommendation-lose {
 }
 
 th.hw-recommendation {
-    border-radius: 12px;
-    border: #ddddff solid 1px;
-    color: #ffffff;
-    background-color: #ccccff;
     text-align: center;
     font-weight: bold;
     margin: 3px;
     padding: 3px;
+    border-radius: 12px;
+    border: #ddddff solid 1px;
+    color: #ffffff;
+    background-color: #ccccff;
 }
 
 div.hw-recommendation {
