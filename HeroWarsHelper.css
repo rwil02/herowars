@@ -42,6 +42,10 @@ th.hw-recommendation:last-child {
     border-radius: 0 12px 12px 0;
 }
 
+th.hw-recommendation:first-child:last-child {
+    border-radius: 12px;
+}
+
 div.hw-recommendation {
     overflow-y: auto;
     scrollbar-width: thin;
