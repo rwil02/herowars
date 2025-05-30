@@ -1,7 +1,7 @@
 
 div.hw-recommendation-head {
     text-align: center;
-    width: 520px;
+    width: 500px;
     padding: 5px;
     position: absolute;
     top: 50px;
@@ -13,7 +13,7 @@ table.hw-recommendation {
     margin: 0 auto;
     border: 0;
     color: white;
-    width: 460px;
+    width: 440px;
 }
 
 tr.hw-recommendation-win {
@@ -38,8 +38,8 @@ th.hw-recommendation {
 div.hw-recommendation {
     overflow-y: auto;
     scrollbar-width: thin;
-    min-width: 510px;
-    width: 510px;
+    min-width: 490px;
+    width: 490px;
 }
 
 td.hw-recommendation-unmatched {
