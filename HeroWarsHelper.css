@@ -23,11 +23,12 @@ tr.hw-recommendation-win {
 tr.hw-recommendation-lose {
     background-color: #800000;
 }
-
-th.hw-recommendation {
+tr.hw-recommendation {
+    margin: 3px;
+}
+th .hw-recommendation {
     text-align: center;
     font-weight: bold;
-    margin: 3px;
     padding: 3px;
     color: #ffffff;
     background-color: #ccccff;
@@ -38,10 +39,10 @@ th.hw-recommendation:first-child {
     padding-left: 14px;
 }
 
-    th.hw-recommendation:last-child {
-        border-radius: 0 12px 12px 0;
-        padding-right: 14px;
-    }
+th.hw-recommendation:last-child {
+    border-radius: 0 12px 12px 0;
+    padding-right: 14px;
+}
 
 th.hw-recommendation:first-child:last-child {
     border-radius: 12px;
