@@ -38,6 +38,8 @@ th.hw-recommendation {
     margin: 0;
     border: none;
     border-bottom: 3px solid;
+    white-space: nowrap;
+    min-width: 40px;
 }
 
 th.hw-recommendation:first-child {

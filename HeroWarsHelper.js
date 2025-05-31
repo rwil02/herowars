@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hero Wars Helper
 // @namespace    http://l-space-design.com/
-// @version      0.7
+// @version      0.8
 // @description  Get Hero Data for Hero Wars
 // @author       Roger Willcocks
 // @match        https://*.hero-wars.com/*
@@ -17,7 +17,7 @@
     const base_Url = 'https://raw.githubusercontent.com/rwil02/herowars/main/';
     const resource_Url = base_Url + 'Resources/';
     const max_HistorySize = 700;
-    const DEBUG = false;
+    const DEBUG = true;
     const INFO = true;
     const WARNING = true;
 
@@ -584,57 +584,33 @@
         if (!recommendation.battles.length) {
             return;
         }
-        var content = jQuery('<table />');
-        for (var i = 0; i < recommendation.battles.length; i++) {
-            if (i >= 5) {
-                break;
-            }
-            var battle = recommendation.battles[i];
-            var when = displayDateTime(new Date(Number.parseInt(battle.startTime) * 1000));
-            var tr = jQuery('<tr />');
-            if (battle.win) {
-                tr.addClass("hw-recommendation-win");
-            } else {
-                tr.addClass("hw-recommendation-lose");
-            }
-            var th = jQuery('<th colspan="2" class="hw-recommendation"></th>');
-            th.text(when);
-            tr.append(th);
-            content.append(tr);
-            for (var j = 0; j < battle.battles.length; j++) {
-                var thisBattle = battle.battles[j];
-                tr = jQuery('<tr />');
-                if (thisBattle.win) {
+        try {
+            var content = jQuery('<table />');
+            for (var i = 0; i < recommendation.battles.length; i++) {
+                if (i >= 5) {
+                    break;
+                }
+                var battle = recommendation.battles[i];
+                var when = displayDateTime(new Date(Number.parseInt(battle.startTime) * 1000));
+                var tr = jQuery('<tr />');
+                if (battle.win) {
                     tr.addClass("hw-recommendation-win");
                 } else {
                     tr.addClass("hw-recommendation-lose");
                 }
-                var td = jQuery('<td />');
-                for (var l = thisBattle.myTeam.length; l--; l >= 0) {
-                    td.append(buildHeroDisplay(thisBattle.myTeam[l], true));
-                }
-                tr.append(td);
-                td = jQuery('<td />');
-                var team = getBestMatchingTeam(opponentTeams, thisBattle.opponentTeamKey);
-                if ((!team) || (team.key != thisBattle.opponentTeamKey)) {
-                    td.addClass("hw-recommendation-unmatched");
-                }
-                for (var k = 0; k < thisBattle.opponentTeam.length; k++) {
-                    var opponentHero = thisBattle.opponentTeam[k];
-                    var hero = getBestMatchingHero(team, opponentHero.key);
-                    if (!hero) {
-                        hero = false;
-                    }
-                    td.append(buildHeroDisplay(opponentHero, hero.key == opponentHero.key));
-                }
-                tr.append(td);
+                var th = jQuery('<th colspan="2" class="hw-recommendation"></th>');
+                th.text(when);
+                tr.append(th);
                 content.append(tr);
+                for (var j = 0; j < battle.battles.length; j++) {
+                    var thisBattle = battle.battles[j];
+                    buildRecommendationLine(thisBattle, opponentTeams, content);
+                }
             }
-            if (i > 10) {
-                break;
-            }
+            container.append(content);
+        } catch (e) {
+            warningLog("displayGrandArenaRecommendation - error: " + e.message);
         }
-        container.append(content);
     }
 
     function displayArenaRecommendation(container, recommendation) {
@@ -653,57 +629,67 @@
         if (!recommendation.battles.length) {
             return;
         }
-        var content = jQuery('<table />');
-        for (var i = 0; i < recommendation.battles.length; i++) {
-            if (i >= 5) {
-                break;
-            }
-            var battle = recommendation.battles[i];
-            var when = displayDateTime(new Date(Number.parseInt(battle.startTime) * 1000));
-            var tr = jQuery('<tr />');
-            if (battle.win) {
-                tr.addClass("hw-recommendation-win");
-            } else {
-                tr.addClass("hw-recommendation-lose");
-            }
-            var th = jQuery('<th colspan="2" class="hw-recommendation"></th>');
-            th.text(when);
-            tr.append(th);
-            content.append(tr);
-            for (var j = 0; j < battle.battles.length; j++) {
-                var thisBattle = battle.battles[j];
-                tr = jQuery('<tr />');
-                if (thisBattle.win) {
+        try {
+            var opponentTeams = recommendation.opponentTeams;
+            var content = jQuery('<table />');
+            for (var i = 0; i < recommendation.battles.length; i++) {
+                if (i >= 5) {
+                    break;
+                }
+                var battle = recommendation.battles[i];
+                var when = displayDateTime(new Date(Number.parseInt(battle.startTime) * 1000));
+                var tr = jQuery('<tr />');
+                if (battle.win) {
                     tr.addClass("hw-recommendation-win");
                 } else {
                     tr.addClass("hw-recommendation-lose");
                 }
-                var td = jQuery('<td />');
-                for (var l = thisBattle.myTeam.length; l--; l >= 0) {
-                    td.append(buildHeroDisplay(thisBattle.myTeam[l], true));
-                }
-                tr.append(td);
-                td = jQuery('<td />');
-                var team = getBestMatchingTeam(recommendation.opponentTeams, thisBattle.opponentTeamKey);
-                if ((!team) || (team.key != thisBattle.opponentTeamKey)) {
-                    td.addClass("hw-recommendation-unmatched");
-                }
-                for (var k = 0; k < thisBattle.opponentTeam.length; k++) {
-                    var opponentHero = thisBattle.opponentTeam[k];
-                    var hero = getBestMatchingHero(team, opponentHero.key);
-                    if (!hero) {
-                        hero = false;
-                    }
-                    td.append(buildHeroDisplay(opponentHero, hero.key == opponentHero.key));
-                }
-                tr.append(td);
+                var th = jQuery('<th colspan="2" class="hw-recommendation"></th>');
+                th.text(when);
+                tr.append(th);
                 content.append(tr);
+                for (var j = 0; j < battle.battles.length; j++) {
+                    var thisBattle = battle.battles[j];
+                    buildRecommendationLine(thisBattle, opponentTeams, content);
+                }
             }
-            if (i > 10) {
-                break;
-            }
+            container.append(content);
+        } catch (e) {
+            warningLog("displayArenaRecommendation - error: " + e.message);
         }
-        container.append(content);
+    }
+
+    function buildRecommendationLine(thisBattle, opponentTeams, content) {
+        try {
+            var tr = jQuery('<tr />');
+            if (thisBattle.win) {
+                tr.addClass("hw-recommendation-win");
+            } else {
+                tr.addClass("hw-recommendation-lose");
+            }
+            var td = jQuery('<td />');
+            for (var l = thisBattle.myTeam.length; l--; l >= 0) {
+                td.append(buildHeroDisplay(thisBattle.myTeam[l], true));
+            }
+            tr.append(td);
+            td = jQuery('<td />');
+            var team = getBestMatchingTeam(opponentTeams, thisBattle.opponentTeamKey);
+            if ((!team) || (team.key != thisBattle.opponentTeamKey)) {
+                td.addClass("hw-recommendation-unmatched");
+            }
+            for (var k = 0; k < thisBattle.opponentTeam.length; k++) {
+                var opponentHero = thisBattle.opponentTeam[k];
+                var hero = getBestMatchingHero(team, opponentHero.key);
+                if (!hero) {
+                    hero = false;
+                }
+                td.append(buildHeroDisplay(opponentHero, hero.key == opponentHero.key));
+            }
+            tr.append(td);
+            content.append(tr);
+        } catch (e) {
+            warningLog("buildRecommendationLine - error: " + e.message);
+        }
     }
 
     function mapColor(colorId) {
@@ -856,16 +842,7 @@
             results.push(getGrandArenaRecommendation(enemies[i]));
         }
         debugLog(results);
-        if (!hw_GA_Recommend) {
-            hw_GA_Recommend = jQuery('<div class="hw-recommendation-head">HERE WE GO</div>');
-            jQuery('main.layout_content').prepend(hw_GA_Recommend);
-        }
-        hw_GA_Recommend.empty();
-        var t = jQuery('<table class="hw-recommendation"></table>');
-        hw_GA_Recommend.append(t);
-        var thead = jQuery("<thead></thead>");
-        t.append(thead);
-        setupRecommendationsHeaders(results, thead);
+        setupRecommendationsHeaders(results);
         setupRecommendationsDisplay(results, displayGrandArenaRecommendation);
         hw_GA_Recommend.show();
     }
@@ -884,20 +861,11 @@
             results.push(getArenaRecommendation(enemies[i]));
         }
         debugLog(results);
-        if (!hw_GA_Recommend) {
-            hw_GA_Recommend = jQuery('<div class="hw-recommendation-head">HERE WE GO</div>');
-            jQuery('main.layout_content').prepend(hw_GA_Recommend);
-        }
-        hw_GA_Recommend.empty();
-
-        var t = jQuery('<table class="hw-recommendation"></table>');
-        hw_GA_Recommend.append(t);
-        var thead = jQuery('<thead></thead>');
-        t.append(thead);
-        setupRecommendationsHeaders(results, thead);
+        setupRecommendationsHeaders(results);
         setupRecommendationsDisplay(results, displayArenaRecommendation);
         hw_GA_Recommend.show();
     }
+
     function setupRecommendationsDisplay(results, displayRecommendationFunc) {
         for (var j = 0; j < results.length; j++) {
             var div = jQuery('<div class="hw-recommendation"></div>');
@@ -909,10 +877,20 @@
         }
     }
 
-    function setupRecommendationsHeaders(results, thead) {
+    function setupRecommendationsHeaders(results,) {
+        if (!hw_GA_Recommend) {
+            hw_GA_Recommend = jQuery('<div class="hw-recommendation-head">HERE WE GO</div>');
+            jQuery('main.layout_content').prepend(hw_GA_Recommend);
+        }
+        hw_GA_Recommend.empty();
+        var t = jQuery('<table class="hw-recommendation"></table>');
+        hw_GA_Recommend.append(t);
+        var thead = jQuery("<thead></thead>");
+        t.append(thead);
+
         for (var k = 0; k < results.length; k++) {
             var tr = jQuery('<tr></tr>');
-            var th = jQuery('<th class="hw-recommendation" style="text-align:left;white-space:nowrap;min-width:40px;"></th>');
+            var th = jQuery('<th class="hw-recommendation"></th>');
             var winStyle = '';
             if (results[k].winPercent > 0.5) {
                 winStyle = "#204020";
@@ -937,7 +915,7 @@
             }
             tr.append(th);
 
-            th = jQuery('<th class="hw-recommendation" style="text-align:right;white-space:nowrap;min-width:40px;"></th>');
+            th = jQuery('<th class="hw-recommendation"></th>');
             txt = ' ';
             if (results[k].place) {
                 txt = "[" + results[k].place + "]";
@@ -951,6 +929,7 @@
             thead.append(tr);
         }
     }
+
     function hookupShowRecommendation(me, header, body, allResults) {
         me.body = body;
         header.click(function () {
