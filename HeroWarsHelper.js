@@ -160,6 +160,9 @@
                 x += "|";
             }
             var member = team[i];
+            if ("undefined_undefined_undefined_undefined" == member.key) {
+                member.key = undefined;
+            }
             if (!member.key) {
                 member.key = generateTeamMember(member).key;
             }
@@ -618,7 +621,7 @@
         }
     }
 
-    function displayArenaRecommendation(container, recommendation) {
+    function displayArenaRecommendation(container, recommendation, opponentTeams) {
         if (!container) {
             warningLog("displayArenaRecommendation - no container");
             return;
@@ -634,8 +637,7 @@
         if (!recommendation.battles.length) {
             return;
         }
-        try {
-            var opponentTeams = recommendation.opponentTeams;
+        try {            
             var content = jQuery('<table />');
             for (var i = 0; i < recommendation.battles.length; i++) {
                 if (i >= 5) {
@@ -655,6 +657,7 @@
                 content.append(tr);
                 for (var j = 0; j < battle.battles.length; j++) {
                     var thisBattle = battle.battles[j];
+                    //TODO: needs opponentTeams = recommendation.opponentTeams
                     buildRecommendationLine(thisBattle, opponentTeams, content);
                 }
             }
@@ -678,13 +681,15 @@
             }
             tr.append(td);
             td = jQuery('<td />');
+            debugLog('buildRecommendationLine: ' + thisBattle.opponentTeamKey);
+            debugLog(opponentTeams);
             var team = getBestMatchingTeam(opponentTeams, thisBattle.opponentTeamKey);
             if ((!team) || (team.key != thisBattle.opponentTeamKey)) {
                 td.addClass("hw-recommendation-unmatched");
             }
             for (var k = 0; k < thisBattle.opponentTeam.length; k++) {
                 var opponentHero = thisBattle.opponentTeam[k];
-                var hero = getBestMatchingHero(team, opponentHero.key);
+                var hero = getBestMatchingHero(team, opponentHero);
                 if (!hero) {
                     hero = false;
                 }
@@ -785,6 +790,9 @@
         var bestTeam = teams[0];
         var bestScore = 999999999;
         for (var i = 0; i < teams.length; i++) {
+            if ("undefined_undefined_undefined_undefined" == teams[i].key) {
+                teams[i].key = undefined;
+            }
             if (!teams[i].key) {
                 teams[i].key = generateTeamKey(teams[i]);
             }
@@ -802,30 +810,41 @@
         return bestTeam;
     }
 
-    function getBestMatchingHero(heros, key) {
-        if (!key) {
-            debugLog("getBestMatchingHero - no key");
+    function getBestMatchingHero(heros, hero) {
+        if (!hero) {
+            warningLog("getBestMatchingHero - no hero");
             return null;
         }
-        debugLog("getBestMatchingHero - " + key);
+        if (!hero.id) {
+            warningLog("getBestMatchingHero - no id");
+            if (!hero.key) {
+                warningLog("getBestMatchingHero - no key");
+                return null;
+            }
+        }
+        if (!hero.key) {
+            warningLog("getBestMatchingHero - no key");
+        }
         if (!heros) {
-            debugLog("getBestMatchingHero - no heros");
+            warningLog("getBestMatchingHero - no heros");
             return null;
         }
-        debugLog("getBestMatchingHero - has heros");
         if (!heros.length) {
-            debugLog("getBestMatchingHero - heros empty");
+            warningLog("getBestMatchingHero - heros empty");
             return null;
         }
-        debugLog("getBestMatchingHero - start loop");
+        infoLog("getBestMatchingHero - start loop" + hero.key);
         var bestHero = heros[0];
         var bestScore = 999999999;
         for (var i = 0; i < heros.length; i++) {
             debugLog(heros[i].key);
-            if (heros[i].key == key) {
+            if (heros[i].key == hero.key) {
                 return heros[i];
             }
-            var newScore = calculateLevenshteinDistance(heros[i].key, key);
+            if (heros[i].id == hero.id) {
+                return heros[i];
+            }
+            var newScore = calculateLevenshteinDistance(heros[i].key, hero.key);
             if (newScore < bestScore) {
                 debugLog("Better - " + heros[i].key);
                 bestScore = newScore;
@@ -848,7 +867,7 @@
         }
         debugLog(results);
         setupRecommendationsHeaders(results);
-        setupRecommendationsDisplay(results, displayGrandArenaRecommendation);
+        setupRecommendationsDisplay(results, displayGrandArenaRecommendation, (ix) => enemies[ix].heroes);
         hw_GA_Recommend.show();
     }
 
@@ -867,15 +886,15 @@
         }
         debugLog(results);
         setupRecommendationsHeaders(results);
-        setupRecommendationsDisplay(results, displayArenaRecommendation);
+        setupRecommendationsDisplay(results, displayArenaRecommendation, (ix) => results[ix].opponentTeams);
         hw_GA_Recommend.show();
     }
 
-    function setupRecommendationsDisplay(results, displayRecommendationFunc) {
+    function setupRecommendationsDisplay(results, displayRecommendationFunc, opposingTeamfunc) {
         for (var j = 0; j < results.length; j++) {
             var div = jQuery('<div class="hw-recommendation"></div>');
             var me = results[j];
-            displayRecommendationFunc(div, me);
+            displayRecommendationFunc(div, me, opposingTeamfunc(j));
             hookupShowRecommendation(me, me.header, div, results);
             hw_GA_Recommend.append(div);
             div.hide();
