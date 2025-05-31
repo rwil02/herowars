@@ -51,7 +51,7 @@
         });
         GM_xmlhttpRequest({
             method: "GET",
-            url: base_Url + "HeroWarsHelper.css",
+            url: base_Url + "HeroWarsHelper.css?" + Date.now(),
             headers: {
                 "Accept": "text/css" // If not specified, browser defaults will be used.
             },
@@ -61,6 +61,11 @@
                 hw_css += response.responseText;
                 hw_css += '\r\n</style>';
                 jQuery("head").append(hw_css);
+                debugLog(response.finalUrl + " loaded successfully");
+                var lastModified = response.responseHeaders.match(/Last-Modified: (.*)/i);
+                if (lastModified && lastModified[1]) {
+                    debugLog("CSS Last-Modified: " + lastModified[1]);
+                }
             }
         });
     }
@@ -892,11 +897,11 @@
             var tr = jQuery('<tr></tr>');
             var th = jQuery('<th class="hw-recommendation"></th>');
             var winStyle = '';
-            if (results[k].winPercent > 0.5) {
-                winStyle = "#204020";
-                if (results[k].winPercent > 0.75) {
-                    winStyle = "#206020";
-                    if (results[k].winPercent > 0.85) {
+            if (results[k].winPercent >= 0.5) {
+                winStyle = "#608060";
+                if (results[k].winPercent >= 0.75) {
+                    winStyle = "#408040";
+                    if (results[k].winPercent >= 0.85) {
                         winStyle = "#208020";
                     }
                 }
