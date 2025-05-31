@@ -14,6 +14,7 @@ table.hw-recommendation {
     border: 0;
     color: white;
     width: 440px;
+    border-collapse: collapse;
 }
 
 tr.hw-recommendation-win {
@@ -36,46 +37,55 @@ th.hw-recommendation {
     background-color: #ccccff;
     margin: 0;
     border: none;
+    border-bottom: 3px solid;
 }
 
 th.hw-recommendation:first-child {
     border-radius: 12px 0 0 12px;
     padding-left: 14px;
+    text-align: left;
+    white-space: nowrap;
+    min-width: 30px;
 }
 
 th.hw-recommendation:last-child {
     border-radius: 0 12px 12px 0;
     padding-right: 14px;
+    text-align: right;
+    white-space: nowrap;
+    min-width: 30px;
 }
 
 th.hw-recommendation:first-child:last-child {
     border-radius: 12px;
+    text-align:center;
 }
 
 div.hw-recommendation {
     overflow-y: auto;
     scrollbar-width: thin;
-    min-width: 430px;
-    width: 430px;
+    min-width: 440px;
+    width: 440px;
+    float: right;
 }
 
 td.hw-recommendation-unmatched {
     background-color: rgba(212,212,212, 0.85);
 }
 
+span.hw-recommendation-unmatched {
+    opacity: 60%;
+}
+
 span.hw-battle-hero-icon {
     background-size: 30px 30px;
     height: 30px;
     width: 30px;
-    margin: 2px;
+    margin: 1px;
     background-position: center;
     background-clip: padding-box;
     background-repeat: no-repeat;
     display: inline-block;
-}
-
-span.hw-recommendation-unmatched {
-    opacity: 60%;
 }
 
 img.hw-battle-hero-icon {
@@ -87,4 +97,7 @@ img.hw-battle-hero-icon {
     background-clip: padding-box;
     background-repeat: no-repeat;
     display: inline-block;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
 }
