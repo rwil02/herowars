@@ -37,7 +37,7 @@ th.hw-recommendation {
     background-color: #ccccff;
     margin: 0;
     border: none;
-    border-bottom: 3px solid;
+    border-bottom: 3px solid transparent;
     white-space: nowrap;
     min-width: 40px;
 }
