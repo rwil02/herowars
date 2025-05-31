@@ -45,7 +45,7 @@ th.hw-recommendation:first-child {
     padding-left: 14px;
     text-align: left;
     white-space: nowrap;
-    min-width: 30px;
+    min-width: 40px;
 }
 
 th.hw-recommendation:last-child {
@@ -53,7 +53,7 @@ th.hw-recommendation:last-child {
     padding-right: 14px;
     text-align: right;
     white-space: nowrap;
-    min-width: 30px;
+    min-width: 40px;
 }
 
 th.hw-recommendation:first-child:last-child {
