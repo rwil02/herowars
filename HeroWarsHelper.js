@@ -17,9 +17,9 @@
     const base_Url = 'https://raw.githubusercontent.com/rwil02/herowars/main/';
     const resource_Url = base_Url + 'Resources/';
     const max_HistorySize = 700;
-    const DEBUG = true;
-    const INFO = true;
-    const WARNING = true;
+    const DEBUG = GM_getValue('LOG_DEBUG', 'true') != 'false';
+    const INFO = GM_getValue('LOG_INFO', 'true') != 'false';
+    const WARNING = GM_getValue('LOG_WARNING', 'true') != 'false';
 
     try { GM_xmlhttpRequest = GM_xmlhttpRequest || this.GM_xmlhttpRequest; } catch (e) { GM_xmlhttpRequest = false; }
 
@@ -81,23 +81,26 @@
         if (!DEBUG) {
             return;
         }
-        console.log(message);
+        console.debug(message);
     }
     function infoLog(message) {
         if (!INFO) {
             return;
         }
-        console.log(message);
+        console.info(message);
     }
     function warningLog(message) {
         if (!WARNING) {
             return;
         }
-        console.log(message);
+        console.warn(message);
     }
 
     function getUserId(httpReq) {
         try {
+            if (!httpReq || !httpReq._requestHeaders) {
+                return hw_UserId;
+            }
             var x = Number.parseInt(httpReq._requestHeaders["X-Auth-Player-Id"]);
             if (!isNaN(x)) {
                 if (x != hw_UserId) {
@@ -196,7 +199,7 @@
         return x;
     }
 
-    function generateTeam(team) {
+    function generateTeam(team, banner) {
         if (!team) {
             return new Array();
         }
@@ -208,6 +211,22 @@
                 x[j] = y;
                 j++;
             }
+        }
+        if (banner) {
+            let slotsArr = [];
+            if (Array.isArray(banner.slots)) {
+                slotsArr = banner.slots.slice();
+            } else if (banner.slots && typeof banner.slots === 'object') {
+                slotsArr = Object.keys(banner.slots)
+                    .sort((a, b) => a - b)
+                    .map(k => banner.slots[k]);
+            }
+            while (slotsArr.length < 3) {
+                slotsArr.push(-1);
+            }
+            team.banner = { id: banner.id, slots: slotsArr };
+        } else {
+            team.banner = { id: -1, slots: [-1, -1, -1] };
         }
         return x;
     }
@@ -313,8 +332,8 @@
         if (myUserId == originalLog.userId) {
             newLog.opponentId = originalLog.typeId;
             newLog.type = "A";
-            newLog.myTeam = generateTeam(originalLog.attackers);
-            newLog.opponentTeam = generateTeam(originalLog.defenders[0]);
+            newLog.myTeam = generateTeam(originalLog.attackers, originalLog.effects.attackersBanner);
+            newLog.opponentTeam = generateTeam(originalLog.defenders[0], originalLog.effects.defendersBanner);
             newLog.win = originalLog.result.win;
         } else {
             if (myUserId != originalLog.typeId) {
@@ -323,8 +342,8 @@
             }
             newLog.opponentId = originalLog.userId;
             newLog.type = "D";
-            newLog.myTeam = generateTeam(originalLog.defenders[0]);
-            newLog.opponentTeam = generateTeam(originalLog.attackers);
+            newLog.myTeam = generateTeam(originalLog.defenders[0], originalLog.effects.defendersBanner);
+            newLog.opponentTeam = generateTeam(originalLog.attackers, originalLog.effects.attackersBanner);
             newLog.win = !originalLog.result.win;
         }
         newLog.myTeamKey = generateTeamKey(newLog.myTeam);
@@ -400,21 +419,22 @@
         }
         var newLog = new Object();
         newLog.startTime = originalLog.startTime;
+        debugLog(originalLog);
         if (myUserId == originalLog.userId) {
             newLog.opponentId = originalLog.typeId;
             newLog.type = "A";
-            newLog.myTeam = generateTeam(originalLog.attackers);
-            newLog.opponentTeam = generateTeam(originalLog.defenders[0]);
+            newLog.myTeam = generateTeam(originalLog.attackers, originalLog.effects.attackersBanner);
+            newLog.opponentTeam = generateTeam(originalLog.defenders[0], originalLog.effects.defendersBanner);
             newLog.win = originalLog.result.win;
         } else {
             if (myUserId != originalLog.typeId) {
-                debugLog("Not defender or attacker: " + myUserId);
+                warningLog("Not defender or attacker: " + myUserId);
                 return null;
             }
             newLog.opponentId = originalLog.userId;
             newLog.type = "D";
-            newLog.myTeam = generateTeam(originalLog.defenders[0]);
-            newLog.opponentTeam = generateTeam(originalLog.attackers);
+            newLog.myTeam = generateTeam(originalLog.defenders[0], originalLog.effects.defendersBanner);
+            newLog.opponentTeam = generateTeam(originalLog.attackers, originalLog.effects.attackersBanner);
             newLog.win = !originalLog.result.win;
         }
         newLog.myTeamKey = generateTeamKey(newLog.myTeam);
@@ -506,7 +526,7 @@
         debugLog(enemy);
         if (enemy.heroes) {
             for (var j = 0; j < enemy.heroes.length; j++) {
-                result.opponentTeams.push(generateTeam(enemy.heroes[j]));
+                result.opponentTeams.push(generateTeam(enemy.heroes[j], enemy.banners && enemy.banners.length ? enemy.banners[0] : null));
             }
         }
         var battles = new Array();
@@ -546,7 +566,7 @@
         debugLog("getArenaRecommendation");
         debugLog(enemy);
         if (enemy.heroes) {
-            result.opponentTeams.push(generateTeam(enemy.heroes));
+            result.opponentTeams.push(generateTeam(enemy.heroes, enemy.banners && enemy.banners.length ? enemy.banners[0] : null));
         }
         var battles = new Array();
         var winCount = 0;
@@ -636,13 +656,20 @@
             td = jQuery('<td />');
             debugLog('buildRecommendationLine: ' + thisBattle.opponentTeamKey);
             debugLog(opponentTeams);
-            var team = getBestMatchingTeam(opponentTeams, thisBattle.opponentTeamKey);
+            var team = getBestMatchingTeam(opponentTeams, thisBattle.opponentTeam);
             if ((!team) || (team.key != thisBattle.opponentTeamKey)) {
                 td.addClass("hw-recommendation-unmatched");
             }
-            for (var k = 0; k < thisBattle.opponentTeam.length; k++) {
-                var opponentHero = thisBattle.opponentTeam[k];
-                var hero = getBestMatchingHero(team, opponentHero);
+            let opponents = [...thisBattle.opponentTeam];
+            opponents.sort((a, b) => {
+                if (!a) {
+                    return (!b) ? 0 : 1;
+                }
+                return (a.position == b.position) ? (a.id || 0) - (b.id || 0) : (a.position || 0) - (b.position || 0);
+            });
+            for (var k = 0; k < opponents.length; k++) {
+                const opponentHero = opponents[k];
+                const hero = getBestMatchingHero(team, opponentHero);
                 if (!hero) {
                     hero = false;
                 }
@@ -724,40 +751,47 @@
         return result;
     }
 
-    function getBestMatchingTeam(teams, key) {
-        if (!key) {
+    function getBestMatchingTeam(teams, team) {
+        if (!team) {
+            warningLog("getBestMatchingTeam - no team");
+            return null;
+        }
+        if (!team.key) {
             debugLog("getBestMatchingTeam - no key");
-            return null;
         }
-        debugLog("getBestMatchingTeam - " + key);
         if (!teams) {
-            debugLog("getBestMatchingTeam - no team");
+            warningLog("getBestMatchingTeam - no teams");
             return null;
         }
-        debugLog("getBestMatchingTeam - has team");
         if (!teams.length) {
-            debugLog("getBestMatchingTeam - team empty");
+            debugLog("getBestMatchingTeam - teams empty");
             return null;
         }
         debugLog("getBestMatchingTeam - start loop");
+        const targetIds = new Set(team.map(member => member.id));
         var bestTeam = teams[0];
-        var bestScore = 999999999;
+        var bestScore = -1;
         for (var i = 0; i < teams.length; i++) {
-            if ("undefined_undefined_undefined_undefined" == teams[i].key) {
-                teams[i].key = undefined;
+            const candidate = teams[i];
+            if ("undefined_undefined_undefined_undefined" == candidate.key) {
+                candidate.key = undefined;
             }
-            if (!teams[i].key) {
-                teams[i].key = generateTeamKey(teams[i]);
+            if (!candidate.key) {
+                candidate.key = generateTeamKey(candidate);
             }
-            debugLog(teams[i].key);
-            if (teams[i].key == key) {
-                return teams[i];
+            // Collect IDs from the candidate team
+            const candidateIds = new Set(candidate.map(member => member.id));
+            // Count matching IDs
+            let matchCount = 0;
+            for (let id of candidateIds) {
+                if (targetIds.has(id)) {
+                    matchCount++;
+                }
             }
-            var newScore = calculateLevenshteinDistance(teams[i].key, key);
-            if (newScore < bestScore) {
-                debugLog("Better - " + teams[i].key);
-                bestScore = newScore;
-                bestTeam = teams[i];
+            debugLog(`Team ${i} matchCount: ${matchCount}`);
+            if (matchCount > bestScore) {
+                bestScore = matchCount;
+                bestTeam = candidate;
             }
         }
         return bestTeam;
@@ -807,14 +841,6 @@
         return bestHero;
     }
 
-    function setupGrandArenaRecommendations(enemies) {
-        setupRecommendations(enemies, getGrandArenaRecommendation);
-    }
-
-    function setupArenaRecommendations(enemies) {
-        setupRecommendations(enemies, getArenaRecommendation);
-    }
-
     function setupRecommendations(enemies, getRecommendationFunc) {
         hideRecommendation();
         if (!enemies || !enemies.length) {
@@ -829,15 +855,15 @@
         }
         debugLog(results);
         setupRecommendationsHeaders(results);
-        setupRecommendationsDisplay(results, displayRecommendation, (ix) => results[ix].opponentTeams);
+        setupRecommendationsDisplay(results);
         hw_GA_Recommend.show();
     }
 
-    function setupRecommendationsDisplay(results, displayRecommendationFunc, opposingTeamfunc) {
+    function setupRecommendationsDisplay(results) {
         for (var j = 0; j < results.length; j++) {
             var div = jQuery('<div class="hw-recommendation"></div>');
             var me = results[j];
-            displayRecommendationFunc(div, me, opposingTeamfunc(j));
+            displayRecommendation(div, me, me.opponentTeams);
             hookupShowRecommendation(me, me.header, div, results);
             hw_GA_Recommend.append(div);
             div.hide();
@@ -1050,7 +1076,7 @@
 
     function grandFindEnemiesHookup(httpReq, ident) {
         if (!ident) {
-            debugLog("grandFindEnemies - ident NULL");
+            warningLog("grandFindEnemies - ident NULL");
             return;
         }
         hw_ArenaFindEnemies = '';
@@ -1066,13 +1092,13 @@
             var x = extractResultsByIdent(jsonObj, ident);
             debugLog(x);
             if (!x) {
-                debugLog("grandFindEnemiesHookup: results not found");
+                warningLog("grandFindEnemiesHookup: results not found");
                 return;
             }
             var result = extractGrandArenaEnemies(x);
             if (result) {
                 hw_GrandFindEnemies = result;
-                setupGrandArenaRecommendations(hw_GrandFindEnemies);
+                setupRecommendations(hw_GrandFindEnemies, getGrandArenaRecommendation)
                 return;
             }
         });
@@ -1080,7 +1106,7 @@
 
     function arenaFindEnemiesHookup(httpReq, ident) {
         if (!ident) {
-            debugLog("arenaFindEnemies - ident NULL");
+            warningLog("arenaFindEnemies - ident NULL");
             return;
         }
         hw_ArenaFindEnemies = '';
@@ -1096,13 +1122,13 @@
             var x = extractResultsByIdent(jsonObj, ident);
             debugLog(x);
             if (!x) {
-                debugLog("arenaFindEnemiesHookup: results not found");
+                warningLog("arenaFindEnemiesHookup: results not found");
                 return;
             }
             var result = extractArenaEnemies(x);
             if (result) {
                 hw_ArenaFindEnemies = result;
-                setupArenaRecommendations(hw_ArenaFindEnemies);
+                setupRecommendations(result, getArenaRecommendation)
                 return;
             }
         });
@@ -1110,11 +1136,11 @@
 
     function callTypeHookup(httpReq, call_id, ident) {
         if (!call_id) {
-            debugLog("call_id NULL");
+            warningLog("call_id NULL");
             return;
         }
         if (!ident) {
-            debugLog(call_id + " - ident NULL");
+            warningLog(call_id + " - ident NULL");
             return;
         }
         httpReq.addEventListener("readystatechange", function (evt) {
@@ -1190,10 +1216,8 @@
                 if (!(dataStr && dataStr.length > 2)) {
                     return;
                 }
-                if (dataStr[0] != '{') {
-                    if (dataStr[0] != '[') {
-                        return;
-                    }
+                if ((dataStr[0] != '{') && (dataStr[0] != '[')) {
+                    return;
                 }
                 var calls = JSON.parse(dataStr);
                 if ((calls.calls) && (calls.calls.length)) {
@@ -1205,7 +1229,7 @@
                 }
                 const callsToIgnore = [
                     "adventure_find","adventure_getActiveData","adventure_getPassed","adventureSolo_getActiveData",
-                    "arenaGetAll", "artifactGetChestLevel", "banner_getAll ", "battlePass_getInfo",
+                    "arenaGetAll", "artifactGetChestLevel", "banner_getAll", "battlePass_getInfo",
                     "battlePass_getSpecial", "billingGetAll", "billingGetLast", "bossGetAll",
                     "brawl_getInfo", "brawl_questGetInfo", "buffs_getInfo", "bundleGetAllAvailableId",
                     "campaignStoryGetList", "chatsGetAll", "chatGetInfo", "chatGetTalks",
@@ -1213,22 +1237,26 @@
                     "clanGetPrevData", "clanInvites_getUserInbox", "clanRaid_getInfo", "clanRaid_ratingInfo",
                     "clanRaidSubscription_getInfo", "clanWarGetBriefInfo", "clanWarGetWarlordInfo", "coopBundle_getInfo",
                     "crossClanWar_getBriefInfo", "crossClanWar_getSettings", "dailyBonusGetInfo", "epicBrawl_getBriefInfo",
-                    "expeditionGet", "freebieCheck", "freebieHaveGroup", "friendsGetInfo",
-                    "gacha_getInfo", "getTime", "hallOfFameGetTrophies", "heroesMerchantGet",
-                    "heroGetAll", "heroRating_getInfo", "idle_getAll ","invasion_getInfo",
-                    "inventoryGet", "mailGetAll", "mechanicAvailability", "mechanicsBan_getInfo",
-                    "missionGetAll", "missionGetReplace", "newYearGetInfo", "offerGetAll",
-                    "offerwall_getActive ", "pet_getAll", "pet_getChest", "pet_getPotionDailyBuyCount",
+                    "epicBrawl_getWinStreak", "expeditionGet", "freebieCheck", "freebieHaveGroup",
+                    "friendsGetInfo", "gacha_getInfo", "getTime", "grandCheckTargetRange",
+                    "hallOfFameGetTrophies", "heroesMerchantGet", "heroGetAll", "heroRating_getInfo",
+                    "idle_getAll", "invasion_getInfo", "inventoryGet", "mailGetAll",
+                    "mechanicAvailability", "mechanicsBan_getInfo", "missionGetAll", "missionGetReplace",
+                    "newHeroNotification_get", "newYearGetInfo", "offerGetAll",
+                    "offerwall_getActive", "pet_getAll", "pet_getChest", "pet_getPotionDailyBuyCount",
                     "pirateTreasureIsAvailable", "playable_getAvailable", "powerTournament_getState", "questGetAll",
                     "questGetEvents", "registration", "rewardedVideo_boxyGetInfo", "roleAscension_getAll",
+                    "seasonAdventure_getInfo",
                     "settingsGetAll", "shopGetAll", "socialQuestGetInfo", "socialQuestGroupJoin",
                     "socialQuestGroupJoin", "socialQuestPost", "socialQuestPost", "specialOffer_getAll",
                     "splitGetAll", "stronghold_getInfo", "subscriptionGetInfo", "teamGetAll",
+                    "team_getBanners",
                     "teamGetFavor", "telegramQuestGetInfo", "titanArenaCheckForgotten","titanArenaGetChestReward",
                     "titanArtifactGetChest","titanGetAll","titanGetSummoningCircle","titanSpiritGetAll",
                     "towerGetInfo","tutorialGetInfo","userGetAvailableAvatarFrames","userGetAvailableAvatars",
                     "userGetAvailableStickers", "userGetInfo", "userMergeGetStatus", "workshopBuff_getInfo",
                     "zeppelinGiftGet",
+                    "stashClient",
                 ];
 
                 for (var i = 0; i < calls.length; i++) {
