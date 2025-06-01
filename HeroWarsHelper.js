@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hero Wars Helper
 // @namespace    http://l-space-design.com/
-// @version      0.8
+// @version      0.9
 // @description  Get Hero Data for Hero Wars
 // @author       Roger Willcocks
 // @match        https://*.hero-wars.com/*
@@ -575,18 +575,17 @@
 
         return result;
     }
-
-    function displayGrandArenaRecommendation(container, recommendation, opponentTeams) {
+    function displayRecommendation(container, recommendation, opponentTeams) {
         if (!container) {
-            warningLog("displayGrandArenaRecommendation - no container");
+            warningLog("displayRecommendation - no container");
             return;
         }
         if (!recommendation) {
-            warningLog("displayGrandArenaRecommendation - no recommendation");
+            warningLog("displayRecommendation - no recommendation");
             return;
         }
         if (!recommendation.battles) {
-            warningLog("displayGrandArenaRecommendation - no battles");
+            warningLog("displayRecommendation - no battles");
             return;
         }
         if (!recommendation.battles.length) {
@@ -617,53 +616,7 @@
             }
             container.append(content);
         } catch (e) {
-            warningLog("displayGrandArenaRecommendation - error: " + e.message);
-        }
-    }
-
-    function displayArenaRecommendation(container, recommendation, opponentTeams) {
-        if (!container) {
-            warningLog("displayArenaRecommendation - no container");
-            return;
-        }
-        if (!recommendation) {
-            warningLog("displayArenaRecommendation - no recommendation");
-            return;
-        }
-        if (!recommendation.battles) {
-            warningLog("displayArenaRecommendation - no battles");
-            return;
-        }
-        if (!recommendation.battles.length) {
-            return;
-        }
-        try {            
-            var content = jQuery('<table />');
-            for (var i = 0; i < recommendation.battles.length; i++) {
-                if (i >= 5) {
-                    break;
-                }
-                var battle = recommendation.battles[i];
-                var when = displayDateTime(new Date(Number.parseInt(battle.startTime) * 1000));
-                var tr = jQuery('<tr />');
-                if (battle.win) {
-                    tr.addClass("hw-recommendation-win");
-                } else {
-                    tr.addClass("hw-recommendation-lose");
-                }
-                var th = jQuery('<th colspan="2" class="hw-recommendation"></th>');
-                th.text(when);
-                tr.append(th);
-                content.append(tr);
-                for (var j = 0; j < battle.battles.length; j++) {
-                    var thisBattle = battle.battles[j];
-                    //TODO: needs opponentTeams = recommendation.opponentTeams
-                    buildRecommendationLine(thisBattle, opponentTeams, content);
-                }
-            }
-            container.append(content);
-        } catch (e) {
-            warningLog("displayArenaRecommendation - error: " + e.message);
+            warningLog("displayRecommendation - error: " + e.message);
         }
     }
 
@@ -855,38 +808,28 @@
     }
 
     function setupGrandArenaRecommendations(enemies) {
-        hideRecommendation();
-        if (!enemies || !enemies.length) {
-            return;
-        }
-        debugLog("setupGrandArenaRecommendations");
-        debugLog(enemies);
-        var results = new Array();
-        for (var i = 0; i < enemies.length; i++) {
-            results.push(getGrandArenaRecommendation(enemies[i]));
-        }
-        debugLog(results);
-        setupRecommendationsHeaders(results);
-        setupRecommendationsDisplay(results, displayGrandArenaRecommendation, (ix) => enemies[ix].heroes);
-        hw_GA_Recommend.show();
+        setupRecommendations(enemies, getGrandArenaRecommendation);
     }
 
     function setupArenaRecommendations(enemies) {
+        setupRecommendations(enemies, getArenaRecommendation);
+    }
+
+    function setupRecommendations(enemies, getRecommendationFunc) {
         hideRecommendation();
-        debugLog(enemies);
         if (!enemies || !enemies.length) {
-            debugLog("setupArenaRecommendations - invalid");
+            warningLog("setupRecommendations - invalid");
             return;
         }
-        debugLog("setupArenaRecommendations - incomplete");
-        //return;
+        debugLog("setupRecommendations");
+        debugLog(enemies);
         var results = new Array();
         for (var i = 0; i < enemies.length; i++) {
-            results.push(getArenaRecommendation(enemies[i]));
+            results.push(getRecommendationFunc(enemies[i]));
         }
         debugLog(results);
         setupRecommendationsHeaders(results);
-        setupRecommendationsDisplay(results, displayArenaRecommendation, (ix) => results[ix].opponentTeams);
+        setupRecommendationsDisplay(results, displayRecommendation, (ix) => results[ix].opponentTeams);
         hw_GA_Recommend.show();
     }
 
@@ -1244,7 +1187,7 @@
                 } else if (data instanceof ArrayBuffer || ArrayBuffer.isView(data)) {
                     dataStr = String.fromCharCode.apply(null, new Uint8Array(data)).trim();
                 }
-                if (!(dataStr && dataStr.length > 5)) {
+                if (!(dataStr && dataStr.length > 2)) {
                     return;
                 }
                 if (dataStr[0] != '{') {
@@ -1260,11 +1203,39 @@
                     debugLog('Entered send with no calls');
                     return;
                 }
+                const callsToIgnore = [
+                    "adventure_find","adventure_getActiveData","adventure_getPassed","adventureSolo_getActiveData",
+                    "arenaGetAll", "artifactGetChestLevel", "banner_getAll ", "battlePass_getInfo",
+                    "battlePass_getSpecial", "billingGetAll", "billingGetLast", "bossGetAll",
+                    "brawl_getInfo", "brawl_questGetInfo", "buffs_getInfo", "bundleGetAllAvailableId",
+                    "campaignStoryGetList", "chatsGetAll", "chatGetInfo", "chatGetTalks",
+                    "clan_prestigeGetInfo", "clanDomination_getInfo", "clanGetActivityRewardTable", "clanGetInfo",
+                    "clanGetPrevData", "clanInvites_getUserInbox", "clanRaid_getInfo", "clanRaid_ratingInfo",
+                    "clanRaidSubscription_getInfo", "clanWarGetBriefInfo", "clanWarGetWarlordInfo", "coopBundle_getInfo",
+                    "crossClanWar_getBriefInfo", "crossClanWar_getSettings", "dailyBonusGetInfo", "epicBrawl_getBriefInfo",
+                    "expeditionGet", "freebieCheck", "freebieHaveGroup", "friendsGetInfo",
+                    "gacha_getInfo", "getTime", "hallOfFameGetTrophies", "heroesMerchantGet",
+                    "heroGetAll", "heroRating_getInfo", "idle_getAll ","invasion_getInfo",
+                    "inventoryGet", "mailGetAll", "mechanicAvailability", "mechanicsBan_getInfo",
+                    "missionGetAll", "missionGetReplace", "newYearGetInfo", "offerGetAll",
+                    "offerwall_getActive ", "pet_getAll", "pet_getChest", "pet_getPotionDailyBuyCount",
+                    "pirateTreasureIsAvailable", "playable_getAvailable", "powerTournament_getState", "questGetAll",
+                    "questGetEvents", "registration", "rewardedVideo_boxyGetInfo", "roleAscension_getAll",
+                    "settingsGetAll", "shopGetAll", "socialQuestGetInfo", "socialQuestGroupJoin",
+                    "socialQuestGroupJoin", "socialQuestPost", "socialQuestPost", "specialOffer_getAll",
+                    "splitGetAll", "stronghold_getInfo", "subscriptionGetInfo", "teamGetAll",
+                    "teamGetFavor", "telegramQuestGetInfo", "titanArenaCheckForgotten","titanArenaGetChestReward",
+                    "titanArtifactGetChest","titanGetAll","titanGetSummoningCircle","titanSpiritGetAll",
+                    "towerGetInfo","tutorialGetInfo","userGetAvailableAvatarFrames","userGetAvailableAvatars",
+                    "userGetAvailableStickers", "userGetInfo", "userMergeGetStatus", "workshopBuff_getInfo",
+                    "zeppelinGiftGet",
+                ];
+
                 for (var i = 0; i < calls.length; i++) {
                     var name = calls[i].name;
                     var ident = calls[i].ident;
                     var handled = false;
-                    debugLog('Entered send - ' + name + " / " + ident);
+                    //debugLog('Entered send - ' + name + " / " + ident);
                     switch (name) {
                         case "grandFindEnemies":
                             grandFindEnemiesHookup(this, ident);
@@ -1284,158 +1255,11 @@
                         case "arenaAttack":
                             hideRecommendation();
                             break;
-                        case "heroGetAll":
-                            break;//heroGetAll
-                        case "pet_getAll":
-                            break;//pet_getAll
-                        case "userMergeGetStatus":
-                            break;//body
-                        case "registration":
-                            break;//body
-                        case "freebieCheck":
-                            break;//freebieCheck
-                        case "userGetInfo":
-                            break;//userGetInfo
-                        case "friendsGetInfo":
-                            break;//friendsGetInfo
-                        case "billingGetAll":
-                            break;//billingGetAll
-                        case "inventoryGet":
-                            break;//inventoryGet
-                        case "titanGetAll":
-                            break;//titanGetAll
-                        case "titanSpiritGetAll":
-                            break;//titanSpiritGetAll
-                        case "pet_getPotionDailyBuyCount":
-                            break;//pet_getPotionDailyBuyCount
-                        case "missionGetAll":
-                            break;//missionGetAll
-                        case "missionGetReplace":
-                            break;//missionGetReplace
-                        case "dailyBonusGetInfo":
-                            break;//dailyBonusGetInfo
-                        case "getTime":
-                            break;//getTime
-                        case "teamGetAll":
-                            break;//teamGetAll
-                        case "teamGetFavor":
-                            break;//teamGetFavor
-                        case "questGetAll":
-                            break;//questGetAll
-                        case "questGetEvents":
-                            break;//questGetEvents
-                        case "mailGetAll":
-                            break;//mailGetAll
-                        case "arenaGetAll":
-                            break;//arenaGetAll
-                        case "socialQuestGetInfo":
-                            break;//socialQuestGetInfo
-                        case "userGetAvailableAvatars":
-                            break;//userGetAvailableAvatars
-                        case "userGetAvailableAvatarFrames":
-                            break;//userGetAvailableAvatarFrames
-                        case "userGetAvailableStickers":
-                            break;//userGetAvailableStickers
-                        case "settingsGetAll":
-                            break;//settingsGetAll
-                        case "subscriptionGetInfo":
-                            break;//subscriptionGetInfo
-                        case "zeppelinGiftGet":
-                            break;//zeppelinGiftGet
-                        case "tutorialGetInfo":
-                            break;//tutorialGetInfo
-                        case "offerGetAll":
-                            break;//offerGetAll
-                        case "splitGetAll":
-                            break;//splitGetAll
-                        case "billingGetLast":
-                            break;//billingGetLast
-                        case "artifactGetChestLevel":
-                            break;//artifactGetChestLevel
-                        case "titanArtifactGetChest":
-                            break;//titanArtifactGetChest
-                        case "titanGetSummoningCircle":
-                            break;//titanGetSummoningCircle
-                        case "newYearGetInfo":
-                            break;//newYearGetInfo
-                        case "clanWarGetBriefInfo":
-                            break;//clanWarGetBriefInfo
-                        case "towerGetInfo":
-                            break;//towerGetInfo
-                        case "clanWarGetWarlordInfo":
-                            break;//clanWarGetWarlordInfo
-                        case "campaignStoryGetList":
-                            break;//campaignStoryGetList
-                        case "roleAscension_getAll":
-                            break;//roleAscension_getAll
-                        case "chatGetAll":
-                            break;//chatGetAll
-                        case "chatGetTalks":
-                            break;//chatGetTalks
-                        case "chatGetInfo":
-                            break;//chatGetInfo
-                        case "clanGetInfo":
-                            break;//clanGetInfo
-                        case "clanGetActivityRewardTable":
-                            break;//clanGetActivityRewardTable
-                        case "clanGetPrevData":
-                            break;//clanGetPrevData
-                        case "heroesMerchantGet":
-                            break;//heroesMerchantGet
-                        case "freebieHaveGroup":
-                            break;//freebieHaveGroup
-                        case "pirateTreasureIsAvailable":
-                            break;//pirateTreasureIsAvailable
-                        case "expeditionGet":
-                            break;//expeditionGet
-                        case "hallOfFameGetTrophies":
-                            break;//hallOfFameGetTrophies
-                        case "titanArenaCheckForgotten":
-                            break;//titanArenaCheckForgotten
-                        case "titanArenaGetChestReward":
-                            break;//titanArenaGetChestReward
-                        case "bossGetAll":
-                            break;//bossGetAll
-                        case "shopGetAll":
-                            break;//shopGetAll
-                        case "adventure_getPassed":
-                            break;//adventure_getPassed
-                        case "adventure_getActiveData":
-                            break;//adventure_getActiveData
-                        case "adventure_find":
-                            break;//adventure_find
-                        case "adventureSolo_getActiveData":
-                            break;//adventureSolo_getActiveData
-                        case "pet_getChest":
-                            break;//pet_getChest
-                        case "playable_getAvailable":
-                            break;//playable_getAvailable
-                        case "battlePass_getInfo":
-                            break;//battlePass_getInfo
-                        case "clanRaid_ratingInfo":
-                            break;//clanRaid_ratingInfo
-                        case "clanRaid_getInfo":
-                            break;//clanRaid_getInfo
-                        case "coopBundle_getInfo":
-                            break;//coopBundle_getInfo
-                        case "buffs_getInfo":
-                            break;//buffs_getInfo
-                        case "brawl_getInfo":
-                            break;//brawl_getInfo
-                        case "brawl_questGetInfo":
-                            break;//brawl_questGetInfo
-                        case "mechanicAvailability":
-                            break;//mechanicAvailability
-                        case "socialQuestPost":
-                            break;//socialQuestPost
-                        case "socialQuestGroupJoin":
-                            break;//socialQuestGroupJoin
-                        case "socialQuestPost":
-                            break;//socialQuestPost
-                        case "socialQuestGroupJoin":
-                            break;//socialQuestGroupJoin
-                        case "invasion_getInfo":
-                            break;//invasion_getInfo
+                        default:
+                            if (!callsToIgnore.includes(name)) {
+                                infoLog('Unknown call - ' + name + " / " + ident);
+                            }
+                            break;
                     }
                     if (!handled) {
                         callTypeHookup(this, name, ident);
