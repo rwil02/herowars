@@ -588,8 +588,8 @@
             }
             let td = jQuery('<td />');
             let myTeam = sortedTeam(thisBattle.myTeam).reverse();
-            for (let l = myTeam.length; l--; l >= 0) {
-                td.append(buildHeroDisplay(myTeam[l], true));
+            for (const member of myTeam) {
+                td.append(buildHeroDisplay(member, true));
             }
             tr.append(td);
             td = jQuery('<td />');
@@ -603,8 +603,7 @@
             if ((!team) || (team.key != thisBattle.opponentTeamKey)) {
                 td.addClass("hw-recommendation-unmatched");
             }
-            for (let k = 0; k < opponents.length; k++) {
-                const opponentHero = opponents[k];
+            for (const opponentHero of opponents) {
                 let hero = getBestMatchingHero(team, opponentHero);
                 if (!hero) {
                     hero = false;
@@ -764,7 +763,7 @@
             warningLog("getBestMatchingHero - heros empty");
             return null;
         }
-        infoLog("getBestMatchingHero - start loop" + hero.key);
+        debugLog("getBestMatchingHero - start loop" + hero.key);
         let bestHero = heros[0];
         let bestScore = 999999999;
         for (const currentHero of heros) {
@@ -826,29 +825,35 @@
         t.append(thead);
 
         for (let k = 0; k < results.length; k++) {
-            let winStyle = '';
-            if (results[k].winPercent >= 0.5) {
-                winStyle = "#608060";
-                if (results[k].winPercent >= 0.75) {
-                    winStyle = "#408040";
-                    if (results[k].winPercent >= 0.85) {
-                        winStyle = "#208020";
+            let winStyle = 'never';
+            if (results[k].battles.length) {
+                winStyle = 'win0';
+                if (results[k].winPercent >= 0.05) {
+                    winStyle = "win1";
+                    if (results[k].winPercent >= 0.5) {
+                        winStyle = "win2";
+                        if (results[k].winPercent >= 0.75) {
+                            winStyle = "win3";
+                            if (results[k].winPercent >= 0.85) {
+                                winStyle = "win4";
+                            }
+                        }
                     }
                 }
-            };
+            }
             let tr = jQuery('<tr></tr>');
             let th = jQuery('<th class="hw-recommendation"></th>');
             let txt = results[k].wins;
             th.text(txt);
             if (winStyle.length > 2) {
-                th.css("background-color", winStyle);
+                th.addClass(winStyle);
             }
             tr.append(th);
             th = jQuery('<th class="hw-recommendation" style="width:100%;"></th>');
             txt = results[k].userName;
             th.text(txt);
             if (winStyle.length > 2) {
-                th.css("background-color", winStyle);
+                th.addClass(winStyle);
             }
             tr.append(th);
 
@@ -859,7 +864,7 @@
             }
             th.text(txt);
             if (winStyle.length > 2) {
-                th.css("background-color", winStyle);
+                th.addClass(winStyle);
             }
             tr.append(th);
             results[k].header = tr;
@@ -872,10 +877,10 @@
         header.click(function () {
             for (let i = 0; i < allResults.length; i++) {
                 allResults[i].body.hide();
-                allResults[i].header.css('background-color', '');
+                allResults[i].header.find('th').css('background-color', '');
             }
             body.show();
-            header.css('background-color', '#333333');
+            header.find('th').css('background-color', '#333333');
         });
 
         setTimeout(function () { body.hide(); header.hide(); }, 90000);
@@ -975,7 +980,7 @@
             return null;
         }
         if ((x[0].heroes.length < 1) || (x[0].heroes.length > 6)) {
-            debugLog("extractArenaEnemies - wrong number of heroes");
+            warningLog("extractArenaEnemies - wrong number of heroes");
             return null;
         }
         if (!x[0].place) {
@@ -1102,7 +1107,7 @@
 
     function battleGetByTypeHookup(httpReq, ident) {
         if (!ident) {
-            debugLog("battleGetByType - ident NULL");
+            warningLog("battleGetByType - ident NULL");
             return;
         }
         httpReq.addEventListener("readystatechange", function (evt) {
@@ -1113,7 +1118,7 @@
             const jsonObj = extractResultsArray(this);
             if (!jsonObj) { return; }
 
-            const x = extractResultsByIdent(jsonObj, ident);
+            let x = extractResultsByIdent(jsonObj, ident);
             debugLog(x);
             if (!x) {
                 debugLog("battleGetByTypeHookup: results not found");
@@ -1128,17 +1133,16 @@
                 debugLog("battleGetByTypeHookup: results.response.replays not found");
                 return;
             }
-            x = x.replays;
-            for (let j = 0; j < x.length; j++) {
-                switch (x[j].type) {
+            for (const replay of x.replays) {
+                switch (replay.type) {
                     case "arena":
-                        addArenaBattleLogIfNew(createBattleLog(x[j], getUserId(httpReq)));
+                        addArenaBattleLogIfNew(createBattleLog(replay, getUserId(httpReq)));
                         break;
                     case "grand":
-                        addGrandArenaBattleLogIfNew(createBattleLog(x[j], getUserId(httpReq)));
+                        addGrandArenaBattleLogIfNew(createBattleLog(replay, getUserId(httpReq)));
                         break;
                     default:
-                        debugLog("battleGetByTypeHookup: unknown type [" + x[j].type + "]");
+                        debugLog("battleGetByTypeHookup: unknown type [" + replay.type + "]");
                         break;
                 }
             }
@@ -1204,11 +1208,10 @@
                     "stashClient",
                 ];
 
-                for (let i = 0; i < calls.length; i++) {
-                    let name = calls[i].name;
-                    let ident = calls[i].ident;
+                for (const call of calls) {
+                    let name = call.name;
+                    let ident = call.ident;
                     let handled = false;
-                    //debugLog('Entered send - ' + name + " / " + ident);
                     switch (name) {
                         case "grandFindEnemies":
                             grandFindEnemiesHookup(this, ident);
