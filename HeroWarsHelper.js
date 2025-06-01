@@ -217,30 +217,37 @@
         }
         let x = [];
         let j = 0;
-        for (const member of team) {
-            const y = generateTeamMember(member);
-            if (y.id) {
-                x[j] = y;
-                j++;
+        try {
+            const teamArray = Array.isArray(team) ? team : Object.values(team);
+            for (const member of teamArray) {
+                const y = generateTeamMember(member);
+                if (y.id) {
+                    x[j] = y;
+                    j++;
+                }
             }
+            if (banner) {
+                let slotsArr = [];
+                if (Array.isArray(banner.slots)) {
+                    slotsArr = banner.slots.slice();
+                } else if (banner.slots && typeof banner.slots === 'object') {
+                    slotsArr = Object.keys(banner.slots)
+                        .sort((a, b) => a - b)
+                        .map(k => banner.slots[k]);
+                }
+                while (slotsArr.length < 3) {
+                    slotsArr.push(-1);
+                }
+                x.banner = { id: banner.id, slots: slotsArr };
+            } else {
+                x.banner = { id: -1, slots: [-1, -1, -1] };
+            }
+            return x;
+        } catch (e) {
+            warningLog(e);
+            warningLog(team);
+            throw e;
         }
-        if (banner) {
-            let slotsArr = [];
-            if (Array.isArray(banner.slots)) {
-                slotsArr = banner.slots.slice();
-            } else if (banner.slots && typeof banner.slots === 'object') {
-                slotsArr = Object.keys(banner.slots)
-                    .sort((a, b) => a - b)
-                    .map(k => banner.slots[k]);
-            }
-            while (slotsArr.length < 3) {
-                slotsArr.push(-1);
-            }
-            team.banner = { id: banner.id, slots: slotsArr };
-        } else {
-            team.banner = { id: -1, slots: [-1, -1, -1] };
-        }
-        return x;
     }
 
     function getHeroPosition(heroid) {
@@ -334,11 +341,15 @@
         let newLog = {};
         newLog.startTime = originalLog.startTime;
         debugLog(originalLog);
+
+        const attacker = generateTeam(originalLog.attackers, originalLog.effects.attackersBanner);
+        const defender = generateTeam(originalLog.defenders[0], originalLog.effects.defendersBanner);
+
         if (myUserId == originalLog.userId) {
             newLog.opponentId = originalLog.typeId;
             newLog.type = "A";
-            newLog.myTeam = generateTeam(originalLog.attackers, originalLog.effects.attackersBanner);
-            newLog.opponentTeam = generateTeam(originalLog.defenders[0], originalLog.effects.defendersBanner);
+            newLog.myTeam = attacker;
+            newLog.opponentTeam = defender;
             newLog.win = originalLog.result.win;
         } else {
             if (myUserId != originalLog.typeId) {
@@ -347,8 +358,8 @@
             }
             newLog.opponentId = originalLog.userId;
             newLog.type = "D";
-            newLog.myTeam = generateTeam(originalLog.defenders[0], originalLog.effects.defendersBanner);
-            newLog.opponentTeam = generateTeam(originalLog.attackers, originalLog.effects.attackersBanner);
+            newLog.myTeam = defender;
+            newLog.opponentTeam = attacker;
             newLog.win = !originalLog.result.win;
         }
         newLog.myTeamKey = generateTeamKey(newLog.myTeam);
