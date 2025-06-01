@@ -65,7 +65,7 @@ th.hw-recommendation {
         background-color: #208020;
     }
 
-    th .hw-recommendation:first-child {
+    th.hw-recommendation:first-child {
         border-radius: 12px 0 0 12px;
         padding-left: 14px;
         text-align: left;
