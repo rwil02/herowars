@@ -23,7 +23,17 @@
 
     try { GM_xmlhttpRequest = GM_xmlhttpRequest || this.GM_xmlhttpRequest; } catch (e) { GM_xmlhttpRequest = false; }
 
-    var hw_HeroList = JSON.parse('[]');
+    let hw_HeroList = JSON.parse('[]');
+    let hw_HeroMap = {};
+
+    function buildHeroMap() {
+        hw_HeroMap = {};
+        for (let i = 0; i < hw_HeroList.length; i++) {
+            let hero = hw_HeroList[i];
+            hw_HeroMap[hero.id] = hero;
+        }
+    }
+
     if (GM_xmlhttpRequest) {
         GM_xmlhttpRequest({
             method: "GET",
@@ -34,11 +44,12 @@
             responseType: "document",
             onload: function (response) {
                 // Attempt to create responseXML, if absent, in supported browsers
-                var responseText = response.responseText;
+                const responseText = response.responseText;
                 if ((responseText) && (responseText.length > 2)) {
                     try {
                         hw_HeroList = JSON.parse(responseText);
                         debugLog("hw_HeroList.length: " + hw_HeroList.length);
+                        buildHeroMap();
                     }
                     catch (err) {
                         debugLog("hw_HeroList.failed - 1");
@@ -57,25 +68,25 @@
             },
             responseType: "document",
             onload: function (response) {
-                var hw_css = '<style>\r\n';
+                let hw_css = '<style>\r\n';
                 hw_css += response.responseText;
                 hw_css += '\r\n</style>';
                 jQuery("head").append(hw_css);
                 debugLog(response.finalUrl + " loaded successfully");
-                var lastModified = response.responseHeaders.match(/Last-Modified: (.*)/i);
+                let lastModified = response.responseHeaders.match(/Last-Modified: (.*)/i);
                 if (lastModified && lastModified[1]) {
                     debugLog("CSS Last-Modified: " + lastModified[1]);
                 }
             }
         });
     }
-    var hw_ArenaFindEnemies = null;
-    var hw_GrandFindEnemies = null;
-    var hw_GrandArenaHistory = JSON.parse(GM_getValue("hw_GrandArenaHistory", "[]"));
-    var hw_ArenaHistory = JSON.parse(GM_getValue("hw_ArenaHistory", "[]"));
-    var hw_UserId = Number.parseInt(GM_getValue("hw_UserId", ""));
+    let hw_ArenaFindEnemies = null;
+    let hw_GrandFindEnemies = null;
+    let hw_GrandArenaHistory = JSON.parse(GM_getValue("hw_GrandArenaHistory", "[]"));
+    let hw_ArenaHistory = JSON.parse(GM_getValue("hw_ArenaHistory", "[]"));
+    let hw_UserId = Number.parseInt(GM_getValue("hw_UserId", ""));
 
-    var hw_GA_Recommend = null;
+    let hw_GA_Recommend = null;
 
     function debugLog(message) {
         if (!DEBUG) {
@@ -101,7 +112,7 @@
             if (!httpReq || !httpReq._requestHeaders) {
                 return hw_UserId;
             }
-            var x = Number.parseInt(httpReq._requestHeaders["X-Auth-Player-Id"]);
+            const x = Number.parseInt(httpReq._requestHeaders["X-Auth-Player-Id"]);
             if (!isNaN(x)) {
                 if (x != hw_UserId) {
                     hw_UserId = x;
@@ -157,12 +168,12 @@
         if (!team) {
             return "";
         }
-        var x = "";
-        for (var i = 0; i < team.length; i++) {
+        let x = "";
+        for (let i = 0; i < team.length; i++) {
             if (x.length > 0) {
                 x += "|";
             }
-            var member = team[i];
+            let member = team[i];
             if ("undefined_undefined_undefined_undefined" == member.key) {
                 member.key = undefined;
             }
@@ -175,7 +186,7 @@
     }
 
     function generateTeamMember(member) {
-        var x = new Object();
+        let x = {};
         if (!member) {
             return x;
         }
@@ -201,12 +212,13 @@
 
     function generateTeam(team, banner) {
         if (!team) {
-            return new Array();
+            warningLog("No team passed to generateTeam");
+            return [];
         }
-        var x = new Array();
-        var j = 0;
-        for (const member in team) {
-            var y = generateTeamMember(team[member]);
+        let x = [];
+        let j = 0;
+        for (const member of team) {
+            const y = generateTeamMember(member);
             if (y.id) {
                 x[j] = y;
                 j++;
@@ -231,42 +243,33 @@
         return x;
     }
 
-    function getHeroName(heroid) {
+    function getHeroPosition(heroid) {
         if (!heroid) {
-            if (heroid == 0) {
-                return heroid;
-            }
-            return "No ID passed";
-        }
-        if (!hw_HeroList) {
-            return "No Heros: " + heroid;
-        }
-        for (var i = 0; i < hw_HeroList.length; i++) {
-            var x = hw_HeroList[i];
-            if (x.id == heroid) {
-                return x.name ?? "No ID matched: " + heroid;
+            if (heroid !== 0) {
+                warningLog("No ID passed");
+                return undefined;
             }
         }
-        return "No ID matched: " + heroid;
+        if (!hw_HeroMap) {
+            warningLog("No Hero Map: " + heroid);
+            return undefined;
+        }
+        if (hw_HeroMap.hasOwnProperty(heroid)) {
+            return hw_HeroMap[heroid].position;
+        }
+        warningLog("No ID matched: " + heroid);
+        return undefined;
+    }
+    function getHeroName(heroid) {
+        if (heroid === undefined || heroid === null) return "No ID passed";
+        const hero = hw_HeroMap[heroid];
+        return hero ? (hero.name ?? "No ID matched: " + heroid) : "No ID matched: " + heroid;
     }
 
     function getHeroImage(heroid) {
-        if (!heroid) {
-            if (heroid == 0) {
-                return heroid;
-            }
-            return "No ID passed";
-        }
-        if (!hw_HeroList) {
-            return "No Heros: " + heroid;
-        }
-        for (var i = 0; i < hw_HeroList.length; i++) {
-            var x = hw_HeroList[i];
-            if (x.id == heroid) {
-                return resource_Url + (x.image ?? "No ID matched: " + heroid);
-            }
-        }
-        return "No ID matched: " + heroid;
+        if (heroid === undefined || heroid === null) return "No ID passed";
+        const hero = hw_HeroMap[heroid];
+        return hero ? resource_Url + (hero.image ?? "No ID matched: " + heroid) : "No ID matched: " + heroid;
     }
 
     function getHeroFrameImage(color, id) {
@@ -277,6 +280,7 @@
             return "No color passed";
         }
         if (id > 5999) {
+            //TODO: change this when I can find pet frames to use
             return resource_Url + ("Frames/Hero_" + color + ".png");
         }
         return resource_Url + ("Frames/Hero_" + color + ".png");
@@ -323,101 +327,11 @@
         }
     }
 
-    function createArenaBattleLog(originalLog, myUserId) {
+    function createBattleLog(originalLog, myUserId) {
         if (!originalLog) {
             return null;
         }
-        var newLog = new Object();
-        newLog.startTime = originalLog.startTime;
-        if (myUserId == originalLog.userId) {
-            newLog.opponentId = originalLog.typeId;
-            newLog.type = "A";
-            newLog.myTeam = generateTeam(originalLog.attackers, originalLog.effects.attackersBanner);
-            newLog.opponentTeam = generateTeam(originalLog.defenders[0], originalLog.effects.defendersBanner);
-            newLog.win = originalLog.result.win;
-        } else {
-            if (myUserId != originalLog.typeId) {
-                debugLog("Not defender or attacker: " + myUserId);
-                return null;
-            }
-            newLog.opponentId = originalLog.userId;
-            newLog.type = "D";
-            newLog.myTeam = generateTeam(originalLog.defenders[0], originalLog.effects.defendersBanner);
-            newLog.opponentTeam = generateTeam(originalLog.attackers, originalLog.effects.attackersBanner);
-            newLog.win = !originalLog.result.win;
-        }
-        newLog.myTeamKey = generateTeamKey(newLog.myTeam);
-        newLog.opponentTeamKey = generateTeamKey(newLog.opponentTeam);
-
-        return newLog;
-    }
-
-    function addArenaBattleLogIfNew(log, myUserId) {
-        if (!log) {
-            return;
-        }
-        var existingLog = null;
-
-        for (var i = 0; i < hw_ArenaHistory.length; i++) {
-            if (log.opponentId != hw_ArenaHistory[i].opponentId) {
-                continue;
-            }
-            if (log.startTime != hw_ArenaHistory[i].startTime) {
-                continue;
-            }
-            if (log.type != hw_ArenaHistory[i].type) {
-                continue;
-            }
-            existingLog = hw_ArenaHistory[i];
-        }
-        if (null == existingLog) {
-            if (hw_ArenaHistory.length > max_HistorySize) {
-                hw_ArenaHistory.sort((a, b) => { return a.startTime - b.startTime; });
-                if (hw_ArenaHistory[0].startTime > hw_ArenaHistory[hw_ArenaHistory.length - 1].startTime) {
-                    hw_ArenaHistory.sort((a, b) => { return b.startTime - a.startTime; });
-                    debugLog("Arena History Sort in wrong order, correcting");
-                }
-                while (hw_ArenaHistory.length > max_HistorySize) {
-                    var ex = hw_ArenaHistory.shift();
-                    infoLog("addArenaBattleLogIfNew Removing: " + ex.opponentId + ", " + displayDateTime(new Date(Number.parseInt(ex.startTime) * 1000)));
-                }
-            }
-            existingLog = new Object();
-            existingLog.startTime = log.startTime;
-            existingLog.type = log.type;
-            existingLog.opponentId = log.opponentId;
-            existingLog.battles = new Array();
-            hw_ArenaHistory.push(existingLog);
-        }
-        var winCount = 0;
-        for (var j = 0; j < existingLog.battles.length; j++) {
-            var battle = existingLog.battles[j];
-            if (battle.win) {
-                winCount += 1;
-            }
-            if (battle.opponentTeamKey != log.opponentTeamKey) {
-                continue;
-            }
-            if (battle.myTeamKey != log.myTeamKey) {
-                continue;
-            }
-            return;
-        }
-        existingLog.battles.push(log);
-        if (log.win) {
-            winCount += 1;
-        }
-        existingLog.win = winCount > 0;
-
-        GM_setValue("hw_ArenaHistory", JSON.stringify(hw_ArenaHistory));
-        debugLog("hw_ArenaHistory.length: " + hw_ArenaHistory.length);
-    }
-
-    function createGrandArenaBattleLog(originalLog, myUserId) {
-        if (!originalLog) {
-            return null;
-        }
-        var newLog = new Object();
+        let newLog = {};
         newLog.startTime = originalLog.startTime;
         debugLog(originalLog);
         if (myUserId == originalLog.userId) {
@@ -443,46 +357,45 @@
         return newLog;
     }
 
-    function addGrandArenaBattleLogIfNew(log, myUserId) {
+    function addArenaBattleLogIfNew(log) {
+        addBattleLogIfNew(hw_ArenaHistory, "hw_ArenaHistory", log, 1);
+    }
+
+    function addGrandArenaBattleLogIfNew(log) {
+        addBattleLogIfNew(hw_GrandArenaHistory, "hw_GrandArenaHistory", log, 2);
+    }
+
+    function addBattleLogIfNew(history, historyName, log, minWins) {
         if (!log) {
             return;
         }
-        var existingLog = null;
+        let existingLog = null;
 
-        for (var i = 0; i < hw_GrandArenaHistory.length; i++) {
-            if (log.opponentId != hw_GrandArenaHistory[i].opponentId) {
+        for (let i = 0; i < history.length; i++) {
+            if (log.opponentId != history[i].opponentId) {
                 continue;
             }
-            if (log.startTime != hw_GrandArenaHistory[i].startTime) {
+            if (log.startTime != history[i].startTime) {
                 continue;
             }
-            if (log.type != hw_GrandArenaHistory[i].type) {
+            if (log.type != history[i].type) {
                 continue;
             }
-            existingLog = hw_GrandArenaHistory[i];
+            existingLog = history[i];
         }
         if (null == existingLog) {
-            if (hw_GrandArenaHistory.length > max_HistorySize) {
-                hw_GrandArenaHistory.sort((a, b) => { return a.startTime - b.startTime; });
-                if (hw_GrandArenaHistory[0].startTime > hw_GrandArenaHistory[hw_GrandArenaHistory.length - 1].startTime) {
-                    hw_GrandArenaHistory.sort((a, b) => { return b.startTime - a.startTime; });
-                    debugLog("Grand Arena History Sort in wrong order, correcting");
-                }
-                while (hw_GrandArenaHistory.length > max_HistorySize) {
-                    var ex = hw_GrandArenaHistory.shift();
-                    debugLog("addGrandArenaBattleLogIfNew Removing: " + ex.opponentId + ", " + displayDateTime(new Date(Number.parseInt(ex.startTime) * 1000)));
-                }
-            }
-            existingLog = new Object();
+            trimHistory(history, max_HistorySize, historyName);
+
+            existingLog = {};
             existingLog.startTime = log.startTime;
             existingLog.type = log.type;
             existingLog.opponentId = log.opponentId;
-            existingLog.battles = new Array();
-            hw_GrandArenaHistory.push(existingLog);
+            existingLog.battles = [];
+            history.push(existingLog);
         }
-        var winCount = 0;
-        for (var j = 0; j < existingLog.battles.length; j++) {
-            var battle = existingLog.battles[j];
+        let winCount = 0;
+        for (let j = 0; j < existingLog.battles.length; j++) {
+            let battle = existingLog.battles[j];
             if (battle.win) {
                 winCount += 1;
             }
@@ -498,10 +411,24 @@
         if (log.win) {
             winCount += 1;
         }
-        existingLog.win = winCount > 1;
+        existingLog.win = winCount >= minWins;
 
-        GM_setValue("hw_GrandArenaHistory", JSON.stringify(hw_GrandArenaHistory));
-        debugLog("hw_GrandArenaHistory.length: " + hw_GrandArenaHistory.length);
+        GM_setValue(historyName, JSON.stringify(history));
+        debugLog(historyName + ".length: " + history.length);
+    }
+
+    function trimHistory(historyArray, maxSize, type) {
+        if (historyArray.length > maxSize) {
+            historyArray.sort((a, b) => a.startTime - b.startTime);
+            if (historyArray[0].startTime > historyArray[historyArray.length - 1].startTime) {
+                historyArray.sort((a, b) => b.startTime - a.startTime);
+                debugLog(type + " History Sort in wrong order, correcting");
+            }
+            while (historyArray.length > maxSize) {
+                const ex = historyArray.shift();
+                infoLog(type + " History Removing: " + ex.opponentId + ", " + displayDateTime(new Date(Number.parseInt(ex.startTime) * 1000)));
+            }
+        }
     }
 
     function hideRecommendation() {
@@ -512,7 +439,7 @@
     }
 
     function getGrandArenaRecommendation(enemy) {
-        var result = new Object();
+        let result = {};
         if (enemy.user) {
             result.userId = enemy.user.id;
             result.userName = enemy.user.name;
@@ -521,18 +448,18 @@
             result.userName = "Missing User";
         }
         result.place = enemy.place;
-        result.opponentTeams = new Array();
+        result.opponentTeams = [];
         debugLog("getGrandArenaRecommendation");
         debugLog(enemy);
         if (enemy.heroes) {
-            for (var j = 0; j < enemy.heroes.length; j++) {
+            for (let j = 0; j < enemy.heroes.length; j++) {
                 result.opponentTeams.push(generateTeam(enemy.heroes[j], enemy.banners && enemy.banners.length ? enemy.banners[0] : null));
             }
         }
-        var battles = new Array();
-        var winCount = 0;
-        for (var i = 0; i < hw_GrandArenaHistory.length; i++) {
-            var battle = hw_GrandArenaHistory[i];
+        let battles = [];
+        let winCount = 0;
+        for (let i = 0; i < hw_GrandArenaHistory.length; i++) {
+            let battle = hw_GrandArenaHistory[i];
             if (battle.type != 'A') {
                 continue;
             }
@@ -558,20 +485,20 @@
     }
 
     function getArenaRecommendation(enemy) {
-        var result = new Object();
+        let result = {};
         result.userId = enemy.user.id;
         result.userName = enemy.user.name;
         result.place = enemy.place;
-        result.opponentTeams = new Array();
+        result.opponentTeams = [];
         debugLog("getArenaRecommendation");
         debugLog(enemy);
         if (enemy.heroes) {
             result.opponentTeams.push(generateTeam(enemy.heroes, enemy.banners && enemy.banners.length ? enemy.banners[0] : null));
         }
-        var battles = new Array();
-        var winCount = 0;
-        for (var i = 0; i < hw_ArenaHistory.length; i++) {
-            var battle = hw_ArenaHistory[i];
+        let battles = [];
+        let winCount = 0;
+        for (let i = 0; i < hw_ArenaHistory.length; i++) {
+            const battle = hw_ArenaHistory[i];
             if (battle.type != 'A') {
                 continue;
             }
@@ -612,25 +539,25 @@
             return;
         }
         try {
-            var content = jQuery('<table />');
-            for (var i = 0; i < recommendation.battles.length; i++) {
+            let content = jQuery('<table />');
+            for (let i = 0; i < recommendation.battles.length; i++) {
                 if (i >= 5) {
                     break;
                 }
-                var battle = recommendation.battles[i];
-                var when = displayDateTime(new Date(Number.parseInt(battle.startTime) * 1000));
-                var tr = jQuery('<tr />');
+                const battle = recommendation.battles[i];
+                const when = displayDateTime(new Date(Number.parseInt(battle.startTime) * 1000));
+                let tr = jQuery('<tr />');
                 if (battle.win) {
                     tr.addClass("hw-recommendation-win");
                 } else {
                     tr.addClass("hw-recommendation-lose");
                 }
-                var th = jQuery('<th colspan="2" class="hw-recommendation"></th>');
+                let th = jQuery('<th colspan="2" class="hw-recommendation"></th>');
                 th.text(when);
                 tr.append(th);
                 content.append(tr);
-                for (var j = 0; j < battle.battles.length; j++) {
-                    var thisBattle = battle.battles[j];
+                for (let j = 0; j < battle.battles.length; j++) {
+                    const thisBattle = battle.battles[j];
                     buildRecommendationLine(thisBattle, opponentTeams, content);
                 }
             }
@@ -640,36 +567,45 @@
         }
     }
 
+    function sortedTeam(team) {
+        return [...team].sort((a, b) => {
+            if (!a) {
+                return (!b) ? 0 : 1;
+            }
+            const aPosition = getHeroPosition(a.id);
+            const bPosition = getHeroPosition(b.id);
+            return (aPosition == bPosition) ? (a.id || 0) - (b.id || 0) : (aPosition || 0) - (bPosition || 0);
+        });
+    }
+
     function buildRecommendationLine(thisBattle, opponentTeams, content) {
         try {
-            var tr = jQuery('<tr />');
+            let tr = jQuery('<tr />');
             if (thisBattle.win) {
                 tr.addClass("hw-recommendation-win");
             } else {
                 tr.addClass("hw-recommendation-lose");
             }
-            var td = jQuery('<td />');
-            for (var l = thisBattle.myTeam.length; l--; l >= 0) {
-                td.append(buildHeroDisplay(thisBattle.myTeam[l], true));
+            let td = jQuery('<td />');
+            let myTeam = sortedTeam(thisBattle.myTeam).reverse();
+            for (let l = myTeam.length; l--; l >= 0) {
+                td.append(buildHeroDisplay(myTeam[l], true));
             }
             tr.append(td);
             td = jQuery('<td />');
             debugLog('buildRecommendationLine: ' + thisBattle.opponentTeamKey);
+
+            let opponents = sortedTeam(thisBattle.opponentTeam);
             debugLog(opponentTeams);
-            var team = getBestMatchingTeam(opponentTeams, thisBattle.opponentTeam);
+            const team = getBestMatchingTeam(opponentTeams, thisBattle.opponentTeam);
+            debugLog(opponentTeams);
+            debugLog(team);
             if ((!team) || (team.key != thisBattle.opponentTeamKey)) {
                 td.addClass("hw-recommendation-unmatched");
             }
-            let opponents = [...thisBattle.opponentTeam];
-            opponents.sort((a, b) => {
-                if (!a) {
-                    return (!b) ? 0 : 1;
-                }
-                return (a.position == b.position) ? (a.id || 0) - (b.id || 0) : (a.position || 0) - (b.position || 0);
-            });
-            for (var k = 0; k < opponents.length; k++) {
+            for (let k = 0; k < opponents.length; k++) {
                 const opponentHero = opponents[k];
-                const hero = getBestMatchingHero(team, opponentHero);
+                let hero = getBestMatchingHero(team, opponentHero);
                 if (!hero) {
                     hero = false;
                 }
@@ -728,11 +664,11 @@
         if (!hero) {
             return "No Hero";
         }
-        var content = '<span style="background-image:url(\'';
+        let content = '<span style="background-image:url(\'';
         content += htmlEncode(getHeroImage(hero.id));
         content += '\');" class="hw-battle-hero-icon" />';
 
-        var result = jQuery(content);
+        let result = jQuery(content);
         if (!isMatched) {
             result.addClass("hw-recommendation-unmatched");
         }
@@ -769,10 +705,14 @@
         }
         debugLog("getBestMatchingTeam - start loop");
         const targetIds = new Set(team.map(member => member.id));
-        var bestTeam = teams[0];
-        var bestScore = -1;
-        for (var i = 0; i < teams.length; i++) {
+        let bestTeam = teams[0];
+        let bestScore = -1;
+        for (let i = 0; i < teams.length; i++) {
             const candidate = teams[i];
+            if (!candidate.length) {
+                warningLog(`getBestMatchingTeam - team ${i} is empty`);
+                continue;
+            }
             if ("undefined_undefined_undefined_undefined" == candidate.key) {
                 candidate.key = undefined;
             }
@@ -816,26 +756,30 @@
             warningLog("getBestMatchingHero - no heros");
             return null;
         }
+        if (!Array.isArray(heros)) {
+            warningLog("getBestMatchingHero - heros not an array");
+            return null;
+        }
         if (!heros.length) {
             warningLog("getBestMatchingHero - heros empty");
             return null;
         }
         infoLog("getBestMatchingHero - start loop" + hero.key);
-        var bestHero = heros[0];
-        var bestScore = 999999999;
-        for (var i = 0; i < heros.length; i++) {
-            debugLog(heros[i].key);
-            if (heros[i].key == hero.key) {
-                return heros[i];
+        let bestHero = heros[0];
+        let bestScore = 999999999;
+        for (const currentHero of heros) {
+            debugLog(currentHero.key);
+            if (currentHero.key == hero.key) {
+                return currentHero;
             }
-            if (heros[i].id == hero.id) {
-                return heros[i];
+            if (currentHero.id == hero.id) {
+                return currentHero;
             }
-            var newScore = calculateLevenshteinDistance(heros[i].key, hero.key);
+            const newScore = calculateLevenshteinDistance(currentHero.key, hero.key);
             if (newScore < bestScore) {
-                debugLog("Better - " + heros[i].key);
+                debugLog("Better - " + currentHero.key);
                 bestScore = newScore;
-                bestHero = heros[i];
+                bestHero = currentHero;
             }
         }
         return bestHero;
@@ -849,8 +793,8 @@
         }
         debugLog("setupRecommendations");
         debugLog(enemies);
-        var results = new Array();
-        for (var i = 0; i < enemies.length; i++) {
+        let results = [];
+        for (let i = 0; i < enemies.length; i++) {
             results.push(getRecommendationFunc(enemies[i]));
         }
         debugLog(results);
@@ -860,9 +804,9 @@
     }
 
     function setupRecommendationsDisplay(results) {
-        for (var j = 0; j < results.length; j++) {
-            var div = jQuery('<div class="hw-recommendation"></div>');
-            var me = results[j];
+        for (let j = 0; j < results.length; j++) {
+            const div = jQuery('<div class="hw-recommendation"></div>');
+            const me = results[j];
             displayRecommendation(div, me, me.opponentTeams);
             hookupShowRecommendation(me, me.header, div, results);
             hw_GA_Recommend.append(div);
@@ -876,15 +820,13 @@
             jQuery('main.layout_content').prepend(hw_GA_Recommend);
         }
         hw_GA_Recommend.empty();
-        var t = jQuery('<table class="hw-recommendation"></table>');
+        let t = jQuery('<table class="hw-recommendation"></table>');
         hw_GA_Recommend.append(t);
-        var thead = jQuery("<thead></thead>");
+        let thead = jQuery("<thead></thead>");
         t.append(thead);
 
-        for (var k = 0; k < results.length; k++) {
-            var tr = jQuery('<tr></tr>');
-            var th = jQuery('<th class="hw-recommendation"></th>');
-            var winStyle = '';
+        for (let k = 0; k < results.length; k++) {
+            let winStyle = '';
             if (results[k].winPercent >= 0.5) {
                 winStyle = "#608060";
                 if (results[k].winPercent >= 0.75) {
@@ -894,7 +836,9 @@
                     }
                 }
             };
-            var txt = results[k].wins;
+            let tr = jQuery('<tr></tr>');
+            let th = jQuery('<th class="hw-recommendation"></th>');
+            let txt = results[k].wins;
             th.text(txt);
             if (winStyle.length > 2) {
                 th.css("background-color", winStyle);
@@ -926,7 +870,7 @@
     function hookupShowRecommendation(me, header, body, allResults) {
         me.body = body;
         header.click(function () {
-            for (var i = 0; i < allResults.length; i++) {
+            for (let i = 0; i < allResults.length; i++) {
                 allResults[i].body.hide();
                 allResults[i].header.css('background-color', '');
             }
@@ -938,7 +882,7 @@
     }
 
     function extractResults(httpReq) {
-        var jsonObj = getJsonObject(httpReq);
+        const jsonObj = getJsonObject(httpReq);
         if (!jsonObj) { return null; }
         debugLog(jsonObj);
         if (!jsonObj.results) { return null; }
@@ -946,7 +890,7 @@
     }
 
     function extractResultsArray(httpReq) {
-        var result = extractResults(httpReq);
+        const result = extractResults(httpReq);
         if (!result) { return null; }
         if (!result.length) { return null; }
         return result;
@@ -961,7 +905,7 @@
             debugLog("extractResultsByIdent - no ident");
             return null;
         }
-        for (var j = 0; j < result.length; j++) {
+        for (let j = 0; j < result.length; j++) {
             if (result[j].ident == ident) {
                 return result[j].result;
             }
@@ -975,7 +919,7 @@
             debugLog("extractGrandArenaEnemies - no results");
             return null;
         }
-        var x = jsonObj.response;
+        let x = jsonObj.response;
         if (!x) {
             debugLog("extractGrandArenaEnemies - no response");
             return null;
@@ -988,7 +932,7 @@
             debugLog("extractGrandArenaEnemies - no user id");
             return null;
         }
-        var place = parseInt(x[0].place);
+        let place = parseInt(x[0].place);
         if (!place) {
             debugLog("extractGrandArenaEnemies - no place");
             return null;
@@ -1017,7 +961,7 @@
             debugLog("extractArenaEnemies - no results");
             return null;
         }
-        var x = jsonObj.response;
+        let x = jsonObj.response;
         if (!x) {
             debugLog("extractArenaEnemies - no response");
             return null;
@@ -1050,7 +994,7 @@
             if (httpReq.responseType == "json") {
                 return httpReq.response;   // FF code.  Chrome??
             }
-            var decodedString = null;
+            let decodedString = null;
             if (httpReq.responseType == "arraybuffer") {
                 if (httpReq.response.byteLength < 100000) {
                     decodedString = String.fromCharCode.apply(null, new Uint8Array(httpReq.response)).trim();
@@ -1086,16 +1030,16 @@
                 return;
             }
             debugLog("grandFindEnemies - ready");
-            var jsonObj = extractResultsArray(this);
+            const jsonObj = extractResultsArray(this);
             if (!jsonObj) { return; }
 
-            var x = extractResultsByIdent(jsonObj, ident);
+            const x = extractResultsByIdent(jsonObj, ident);
             debugLog(x);
             if (!x) {
                 warningLog("grandFindEnemiesHookup: results not found");
                 return;
             }
-            var result = extractGrandArenaEnemies(x);
+            const result = extractGrandArenaEnemies(x);
             if (result) {
                 hw_GrandFindEnemies = result;
                 setupRecommendations(hw_GrandFindEnemies, getGrandArenaRecommendation)
@@ -1116,16 +1060,16 @@
                 return;
             }
             debugLog("arenaFindEnemies - ready");
-            var jsonObj = extractResultsArray(this);
+            const jsonObj = extractResultsArray(this);
             if (!jsonObj) { return; }
 
-            var x = extractResultsByIdent(jsonObj, ident);
+            const x = extractResultsByIdent(jsonObj, ident);
             debugLog(x);
             if (!x) {
                 warningLog("arenaFindEnemiesHookup: results not found");
                 return;
             }
-            var result = extractArenaEnemies(x);
+            const result = extractArenaEnemies(x);
             if (result) {
                 hw_ArenaFindEnemies = result;
                 setupRecommendations(result, getArenaRecommendation)
@@ -1147,10 +1091,10 @@
             if (!isReady(this)) {
                 return;
             }
-            var jsonObj = extractResultsArray(this);
+            const jsonObj = extractResultsArray(this);
             if (!jsonObj) { return; }
 
-            var x = extractResultsByIdent(jsonObj, ident);
+            const x = extractResultsByIdent(jsonObj, ident);
             debugLog(call_id);
             debugLog(x);
        });
@@ -1166,10 +1110,10 @@
                 return;
             }
             debugLog("battleGetByType - ready");
-            var jsonObj = extractResultsArray(this);
+            const jsonObj = extractResultsArray(this);
             if (!jsonObj) { return; }
 
-            var x = extractResultsByIdent(jsonObj, ident);
+            const x = extractResultsByIdent(jsonObj, ident);
             debugLog(x);
             if (!x) {
                 debugLog("battleGetByTypeHookup: results not found");
@@ -1185,13 +1129,13 @@
                 return;
             }
             x = x.replays;
-            for (var j = 0; j < x.length; j++) {
+            for (let j = 0; j < x.length; j++) {
                 switch (x[j].type) {
                     case "arena":
-                        addArenaBattleLogIfNew(createArenaBattleLog(x[j], getUserId(httpReq)), getUserId(httpReq));
+                        addArenaBattleLogIfNew(createBattleLog(x[j], getUserId(httpReq)));
                         break;
                     case "grand":
-                        addGrandArenaBattleLogIfNew(createGrandArenaBattleLog(x[j], getUserId(httpReq)), getUserId(httpReq));
+                        addGrandArenaBattleLogIfNew(createBattleLog(x[j], getUserId(httpReq)));
                         break;
                     default:
                         debugLog("battleGetByTypeHookup: unknown type [" + x[j].type + "]");
@@ -1207,7 +1151,7 @@
                 if (!data) {
                     return;
                 }
-                var dataStr = null;
+                let dataStr = null;
                 if (typeof data === "string") {
                     dataStr = data.trim();
                 } else if (data instanceof ArrayBuffer || ArrayBuffer.isView(data)) {
@@ -1219,7 +1163,7 @@
                 if ((dataStr[0] != '{') && (dataStr[0] != '[')) {
                     return;
                 }
-                var calls = JSON.parse(dataStr);
+                let calls = JSON.parse(dataStr);
                 if ((calls.calls) && (calls.calls.length)) {
                     calls = calls.calls;
                 }
@@ -1229,14 +1173,15 @@
                 }
                 const callsToIgnore = [
                     "adventure_find","adventure_getActiveData","adventure_getPassed","adventureSolo_getActiveData",
-                    "arenaGetAll", "artifactGetChestLevel", "banner_getAll", "battlePass_getInfo",
-                    "battlePass_getSpecial", "billingGetAll", "billingGetLast", "bossGetAll",
-                    "brawl_getInfo", "brawl_questGetInfo", "buffs_getInfo", "bundleGetAllAvailableId",
-                    "campaignStoryGetList", "chatsGetAll", "chatGetInfo", "chatGetTalks",
-                    "clan_prestigeGetInfo", "clanDomination_getInfo", "clanGetActivityRewardTable", "clanGetInfo",
-                    "clanGetPrevData", "clanInvites_getUserInbox", "clanRaid_getInfo", "clanRaid_ratingInfo",
-                    "clanRaidSubscription_getInfo", "clanWarGetBriefInfo", "clanWarGetWarlordInfo", "coopBundle_getInfo",
-                    "crossClanWar_getBriefInfo", "crossClanWar_getSettings", "dailyBonusGetInfo", "epicBrawl_getBriefInfo",
+                    "arenaCheckTargetRange", "arenaGetAll", "artifactGetChestLevel", "banner_getAll",
+                    "battlePass_getInfo", "battlePass_getSpecial", "billingGetAll", "billingGetLast",
+                    "bossGetAll", "brawl_getInfo", "brawl_questGetInfo", "buffs_getInfo",
+                    "bundleGetAllAvailableId", "campaignStoryGetList", "chatsGetAll", "chatGetInfo",
+                    "chatGetTalks", "clan_prestigeGetInfo", "clanDomination_getInfo", "clanGetActivityRewardTable",
+                    "clanGetInfo", "clanGetPrevData", "clanInvites_getUserInbox", "clanRaid_getInfo",
+                    "clanRaid_ratingInfo", "clanRaidSubscription_getInfo", "clanWarGetBriefInfo", "clanWarGetWarlordInfo",
+                    "coopBundle_getInfo", "crossClanWar_getBriefInfo", "crossClanWar_getSettings", "dailyBonusGetInfo",
+                    "epicBrawl_getBriefInfo",
                     "epicBrawl_getWinStreak", "expeditionGet", "freebieCheck", "freebieHaveGroup",
                     "friendsGetInfo", "gacha_getInfo", "getTime", "grandCheckTargetRange",
                     "hallOfFameGetTrophies", "heroesMerchantGet", "heroGetAll", "heroRating_getInfo",
@@ -1259,10 +1204,10 @@
                     "stashClient",
                 ];
 
-                for (var i = 0; i < calls.length; i++) {
-                    var name = calls[i].name;
-                    var ident = calls[i].ident;
-                    var handled = false;
+                for (let i = 0; i < calls.length; i++) {
+                    let name = calls[i].name;
+                    let ident = calls[i].ident;
+                    let handled = false;
                     //debugLog('Entered send - ' + name + " / " + ident);
                     switch (name) {
                         case "grandFindEnemies":
