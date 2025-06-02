@@ -250,6 +250,7 @@
         }
     }
 
+    // https://h-w.fun/en/order-rank/
     function getHeroPosition(heroid) {
         if (!heroid) {
             if (heroid !== 0) {

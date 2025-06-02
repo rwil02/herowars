@@ -42,316 +42,16 @@
     "position": 7
   },
   {
-    "image": "Avatars/Astaroth.png",
-    "id": 4,
-    "name": "Astaroth",
+    "image": "Avatars/Julius.png",
+    "id": 61,
+    "name": "Julius",
     "position": 8
   },
   {
-    "image": "Avatars/Galahad.png",
-    "id": 2,
-    "name": "Galahad",
+    "image": "Avatars/Astaroth.png",
+    "id": 4,
+    "name": "Astaroth",
     "position": 9
-  },
-  {
-    "image": "Avatars/Ishmael.png",
-    "id": 25,
-    "name": "Ishmael",
-    "position": 10
-  },
-  {
-    "image": "Avatars/K%27arkh.png",
-    "id": 41,
-    "name": "K'arkh",
-    "position": 11
-  },
-  {
-    "image": "Avatars/Markus.png",
-    "id": 21,
-    "name": "Markus",
-    "position": 12
-  },
-  {
-    "image": "Avatars/Andvari.png",
-    "id": 47,
-    "name": "Andvari",
-    "position": 13
-  },
-  {
-    "image": "Avatars/Yasmine.png",
-    "id": 49,
-    "name": "Yasmine",
-    "position": 14
-  },
-  {
-    "image": "Avatars/Elmir.png",
-    "id": 38,
-    "name": "Elmir",
-    "position": 15
-  },
-  {
-    "image": "Avatars/Lilith.png",
-    "id": 26,
-    "name": "Lilith",
-    "position": 55
-  },
-  {
-    "image": "Avatars/Qing_Mao.png",
-    "id": 28,
-    "name": "Qing Mao",
-    "position": 17
-  },
-  {
-    "image": "Avatars/Satori.png",
-    "id": 45,
-    "name": "Satori",
-    "position": 18
-  },
-  {
-    "image": "Avatars/Maya.png",
-    "id": 36,
-    "name": "Maya",
-    "position": 19
-  },
-  {
-    "image": "Avatars/Arachne.png",
-    "id": 12,
-    "name": "Arachne",
-    "position": 20
-  },
-  {
-    "image": "Avatars/Dante.png",
-    "id": 16,
-    "name": "Dante",
-    "position": 21
-  },
-  {
-    "image": "Avatars/Krista.png",
-    "id": 34,
-    "name": "Krista",
-    "position": 22
-  },
-  {
-    "image": "Avatars/Keira.png",
-    "id": 3,
-    "name": "Keira",
-    "position": 23
-  },
-  {
-    "image": "Avatars/Judge.png",
-    "id": 18,
-    "name": "Judge",
-    "position": 24
-  },
-  {
-    "image": "Avatars/Morrigan.png",
-    "id": 51,
-    "name": "Morrigan",
-    "position": 25
-  },
-  {
-    "image": "Avatars/Celeste.png",
-    "id": 43,
-    "name": "Celeste",
-    "position": 26
-  },
-  {
-    "image": "Avatars/Kai.png",
-    "id": 5,
-    "name": "Kai",
-    "position": 27
-  },
-  {
-    "image": "Avatars/Isaac.png",
-    "id": 52,
-    "name": "Isaac",
-    "position": 28
-  },
-  {
-    "image": "Avatars/Jhu.png",
-    "id": 37,
-    "name": "Jhu",
-    "position": 29
-  },
-  {
-    "image": "Avatars/Nebula.png",
-    "id": 40,
-    "name": "Nebula",
-    "position": 30
-  },
-  {
-    "image": "Avatars/Sebastian.png",
-    "id": 48,
-    "name": "Sebastian",
-    "position": 31
-  },
-  {
-    "image": "Avatars/Mojo.png",
-    "id": 17,
-    "name": "Mojo",
-    "position": 32
-  },
-  {
-    "image": "Avatars/Heidi.png",
-    "id": 9,
-    "name": "Heidi",
-    "position": 33
-  },
-  {
-    "image": "Avatars/Jorgen.png",
-    "id": 35,
-    "name": "Jorgen",
-    "position": 34
-  },
-  {
-    "image": "Avatars/Orion.png",
-    "id": 13,
-    "name": "Orion",
-    "position": 35
-  },
-  {
-    "image": "Avatars/Ginger.png",
-    "id": 15,
-    "name": "Ginger",
-    "position": 36
-  },
-  {
-    "image": "Avatars/Daredevil.png",
-    "id": 8,
-    "name": "Daredevil",
-    "position": 37
-  },
-  {
-    "image": "Avatars/Dark_Star.png",
-    "id": 19,
-    "name": "Dark Star",
-    "position": 38
-  },
-  {
-    "image": "Avatars/Lars.png",
-    "id": 33,
-    "name": "Lars",
-    "position": 39
-  },
-  {
-    "image": "Avatars/Astrid.png",
-    "id": 44,
-    "name": "Astrid and Lucas",
-    "position": 40
-  },
-  {
-    "image": "Avatars/Cornelius.png",
-    "id": 30,
-    "name": "Cornelius",
-    "position": 41
-  },
-  {
-    "image": "Avatars/Faceless.png",
-    "id": 10,
-    "name": "Faceless",
-    "position": 42
-  },
-  {
-    "image": "Avatars/Fox.png",
-    "id": 14,
-    "name": "Fox",
-    "position": 46
-  },
-  {
-    "image": "Avatars/Lian.png",
-    "id": 23,
-    "name": "Lian",
-    "position": 44
-  },
-  {
-    "image": "Avatars/Phobos.png",
-    "id": 6,
-    "name": "Phobos",
-    "position": 45
-  },
-  {
-    "image": "Avatars/Artemis.png",
-    "id": 20,
-    "name": "Artemis",
-    "position": 46
-  },
-  {
-    "image": "Avatars/Dorian.png",
-    "id": 29,
-    "name": "Dorian",
-    "position": 47
-  },
-  {
-    "image": "Avatars/Peppy.png",
-    "id": 22,
-    "name": "Peppy",
-    "position": 48
-  },
-  {
-    "image": "Avatars/Jet.png",
-    "id": 31,
-    "name": "Jet",
-    "position": 49
-  },
-  {
-    "image": "Avatars/Thea.png",
-    "id": 7,
-    "name": "Thea",
-    "position": 50
-  },
-  {
-    "image": "Avatars/Helios.png",
-    "id": 32,
-    "name": "Helios",
-    "position": 51
-  },
-  {
-    "image": "Avatars/Martha.png",
-    "id": 46,
-    "name": "Martha",
-    "position": 52
-  },
-  {
-    "image": "Avatars/Iris.png",
-    "id": 55,
-    "name": "Iris",
-    "position": 43
-  },
-  {
-    "image": "Avatars/Amira.png",
-    "id": 56,
-    "name": "Amira",
-    "position": 29
-  },
-  {
-    "image": "Avatars/Alvanor.png",
-    "id": 53,
-    "name": "Alvanor",
-    "position": 19
-  },
-  {
-    "image": "Avatars/Tristan.png",
-    "id": 54,
-    "name": "Tristan",
-    "position": 12
-  },
-  {
-    "image": "Avatars/Fafnir.png",
-    "id": 57,
-    "name": "Fafnir",
-    "position": 60
-  },
-  {
-    "image": "Avatars/Aidan.png",
-    "id": 58,
-    "name": "Aidan",
-    "position": 45
-  },
-  {
-    "image": "Avatars/Kayla.png",
-    "id": 59,
-    "name": "Kayla",
-    "position": 10
   },
   {
     "image": "Avatars/Mushroom.png",
@@ -360,105 +60,405 @@
     "position": 10
   },
   {
-    "image": "Avatars/Julius.png",
-    "id": 61,
-    "name": "Julius",
-    "position": 10
+    "image": "Avatars/Galahad.png",
+    "id": 2,
+    "name": "Galahad",
+    "position": 11
   },
   {
-    "image": "Avatars/Polaris.png",
-    "id": 62,
-    "name": "Polaris",
-    "position": 10
-  },
-  {
-    "image": "Avatars/LaraCroft.png",
-    "id": 63,
-    "name": "Lara Croft",
-    "position": 22
-  },
-  {
-    "image": "Avatars/Augustus.png",
-    "id": 64,
-    "name": "Augustus",
-    "position": 45
-  },
-  {
-    "image": "Avatars/NinjaTurtles.png",
-    "id": 65,
-    "name": "Ninja Turtles",
-    "position": 15
+    "image": "Avatars/Kayla.png",
+    "id": 59,
+    "name": "Kayla",
+    "position": 12
   },
   {
     "image": "Avatars/Lyria.png",
     "id": 67,
     "name": "Lyria",
-    "position": 9
+    "position": 13
+  },
+  {
+    "image": "Avatars/Tristan.png",
+    "id": 54,
+    "name": "Tristan",
+    "position": 14
+  },
+  {
+    "image": "Avatars/Ishmael.png",
+    "id": 25,
+    "name": "Ishmael",
+    "position": 15
+  },
+  {
+    "image": "Avatars/K%27arkh.png",
+    "id": 41,
+    "name": "K'arkh",
+    "position": 16
+  },
+  {
+    "image": "Avatars/Markus.png",
+    "id": 21,
+    "name": "Markus",
+    "position": 17
+  },
+  {
+    "image": "Avatars/Andvari.png",
+    "id": 47,
+    "name": "Andvari",
+    "position": 18
+  },
+  {
+    "image": "Avatars/Yasmine.png",
+    "id": 49,
+    "name": "Yasmine",
+    "position": 19
+  },
+  {
+    "image": "Avatars/NinjaTurtles.png",
+    "id": 65,
+    "name": "Ninja Turtles",
+    "position": 20
+  },
+  {
+    "image": "Avatars/Elmir.png",
+    "id": 38,
+    "name": "Elmir",
+    "position": 21
+  },
+  {
+    "image": "Avatars/Qing_Mao.png",
+    "id": 28,
+    "name": "Qing Mao",
+    "position": 22
+  },
+  {
+    "image": "Avatars/Satori.png",
+    "id": 45,
+    "name": "Satori",
+    "position": 23
+  },
+  {
+    "image": "Avatars/Alvanor.png",
+    "id": 53,
+    "name": "Alvanor",
+    "position": 24
+  },
+  {
+    "image": "Avatars/Maya.png",
+    "id": 36,
+    "name": "Maya",
+    "position": 25
+  },
+  {
+    "image": "Avatars/Arachne.png",
+    "id": 12,
+    "name": "Arachne",
+    "position": 26
+  },
+  {
+    "image": "Avatars/Dante.png",
+    "id": 16,
+    "name": "Dante",
+    "position": 27
+  },
+  {
+    "image": "Avatars/Krista.png",
+    "id": 34,
+    "name": "Krista",
+    "position": 28
+  },
+  {
+    "image": "Avatars/Keira.png",
+    "id": 3,
+    "name": "Keira",
+    "position": 29
+  },
+  {
+    "image": "Avatars/Judge.png",
+    "id": 18,
+    "name": "Judge",
+    "position": 30
+  },
+  {
+    "image": "Avatars/Morrigan.png",
+    "id": 51,
+    "name": "Morrigan",
+    "position": 31
+  },
+  {
+    "image": "Avatars/Celeste.png",
+    "id": 43,
+    "name": "Celeste",
+    "position": 32
+  },
+  {
+    "image": "Avatars/Amira.png",
+    "id": 56,
+    "name": "Amira",
+    "position": 33
+  },
+  {
+    "image": "Avatars/Kai.png",
+    "id": 5,
+    "name": "Kai",
+    "position": 34
+  },
+  {
+    "image": "Avatars/Isaac.png",
+    "id": 52,
+    "name": "Isaac",
+    "position": 35
+  },
+  {
+    "image": "Avatars/Jhu.png",
+    "id": 37,
+    "name": "Jhu",
+    "position": 36
+  },
+  {
+    "image": "Avatars/Nebula.png",
+    "id": 40,
+    "name": "Nebula",
+    "position": 37
+  },
+  {
+    "image": "Avatars/Sebastian.png",
+    "id": 48,
+    "name": "Sebastian",
+    "position": 38
+  },
+  {
+    "image": "Avatars/Mojo.png",
+    "id": 17,
+    "name": "Mojo",
+    "position": 39
+  },
+  {
+    "image": "Avatars/Heidi.png",
+    "id": 9,
+    "name": "Heidi",
+    "position": 40
+  },
+  {
+    "image": "Avatars/Jorgen.png",
+    "id": 35,
+    "name": "Jorgen",
+    "position": 41
+  },
+  {
+    "image": "Avatars/Orion.png",
+    "id": 13,
+    "name": "Orion",
+    "position": 42
   },
   {
     "image": "Avatars/Folio.png",
     "id": 66,
     "name": "Folio",
-    "position": 37
+    "position": 43
+  },
+  {
+    "image": "Avatars/Ginger.png",
+    "id": 15,
+    "name": "Ginger",
+    "position": 44
+  },
+  {
+    "image": "Avatars/Daredevil.png",
+    "id": 8,
+    "name": "Daredevil",
+    "position": 45
+  },
+  {
+    "image": "Avatars/LaraCroft.png",
+    "id": 63,
+    "name": "Lara Croft",
+    "position": 46
+  },
+  {
+    "image": "Avatars/Dark_Star.png",
+    "id": 19,
+    "name": "Dark Star",
+    "position": 47
+  },
+  {
+    "image": "Avatars/Lars.png",
+    "id": 33,
+    "name": "Lars",
+    "position": 48
+  },
+  {
+    "image": "Avatars/Augustus.png",
+    "id": 64,
+    "name": "Augustus",
+    "position": 49
+  },
+  {
+    "image": "Avatars/Astrid.png",
+    "id": 44,
+    "name": "Astrid and Lucas",
+    "position": 50
+  },
+  {
+    "image": "Avatars/Aidan.png",
+    "id": 58,
+    "name": "Aidan",
+    "position": 51
+  },
+  {
+    "image": "Avatars/Iris.png",
+    "id": 55,
+    "name": "Iris",
+    "position": 52
+  },
+  {
+    "image": "Avatars/Cornelius.png",
+    "id": 30,
+    "name": "Cornelius",
+    "position": 53
+  },
+  {
+    "image": "Avatars/Faceless.png",
+    "id": 10,
+    "name": "Faceless",
+    "position": 54
+  },
+  {
+    "image": "Avatars/Fox.png",
+    "id": 14,
+    "name": "Fox",
+    "position": 55
+  },
+  {
+    "image": "Avatars/Lian.png",
+    "id": 23,
+    "name": "Lian",
+    "position": 56
+  },
+  {
+    "image": "Avatars/Phobos.png",
+    "id": 6,
+    "name": "Phobos",
+    "position": 57
+  },
+  {
+    "image": "Avatars/Artemis.png",
+    "id": 20,
+    "name": "Artemis",
+    "position": 58
+  },
+  {
+    "image": "Avatars/Dorian.png",
+    "id": 29,
+    "name": "Dorian",
+    "position": 59
+  },
+  {
+    "image": "Avatars/Polaris.png",
+    "id": 62,
+    "name": "Polaris",
+    "position": 60
+  },
+  {
+    "image": "Avatars/Peppy.png",
+    "id": 22,
+    "name": "Peppy",
+    "position": 61
+  },
+  {
+    "image": "Avatars/Jet.png",
+    "id": 31,
+    "name": "Jet",
+    "position": 62
+  },
+  {
+    "image": "Avatars/Thea.png",
+    "id": 7,
+    "name": "Thea",
+    "position": 63
+  },
+  {
+    "image": "Avatars/Fafnir.png",
+    "id": 57,
+    "name": "Fafnir",
+    "position": 64
+  },
+  {
+    "image": "Avatars/Helios.png",
+    "id": 32,
+    "name": "Helios",
+    "position": 65
+  },
+  {
+    "image": "Avatars/Lilith.png",
+    "id": 26,
+    "name": "Lilith",
+    "position": 66
+  },
+  {
+    "image": "Avatars/Martha.png",
+    "id": 46,
+    "name": "Martha",
+    "position": 67
   },
   {
     "image": "Avatars/Fenris.png",
     "id": 6000,
     "name": "Fenris",
-    "position": 99
+    "position": 9999
   },
   {
     "image": "Avatars/Oliver.png",
     "id": 6001,
     "name": "Oliver",
-    "position": 99
+    "position": 9999
   },
   {
     "image": "Avatars/Merlin.png",
     "id": 6002,
     "name": "Merlin",
-    "position": 99
+    "position": 9999
   },
   {
     "image": "Avatars/Mara.png",
     "id": 6003,
     "name": "Mara",
-    "position": 99
+    "position": 9999
   },
   {
     "image": "Avatars/Cain.png",
     "id": 6004,
     "name": "Cain",
-    "position": 99
+    "position": 9999
   },
   {
     "image": "Avatars/Albus.png",
     "id": 6005,
     "name": "Albus",
-    "position": 99
+    "position": 9999
   },
   {
     "image": "Avatars/Axel.png",
     "id": 6006,
     "name": "Axel",
-    "position": 99
+    "position": 9999
   },
   {
     "image": "Avatars/Biscuit.png",
     "id": 6007,
     "name": "Biscuit",
-    "position": 99
+    "position": 9999
   },
   {
     "image": "Avatars/Khorus.png",
     "id": 6008,
     "name": "Khorus",
-    "position": 99
+    "position": 9999
   },
   {
     "image": "Avatars/Vex.png",
     "id": 6009,
     "name": "Vex",
-    "position": 99
+    "position": 9999
   }
 ]
