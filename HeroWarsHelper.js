@@ -138,32 +138,6 @@
         return true;
     }
 
-    const calculateLevenshteinDistance = (a, b) => {
-        const aLimit = a.length + 1;
-        const bLimit = b.length + 1;
-        const distance = Array(aLimit);
-        for (let i = 0; i < aLimit; ++i) {
-            distance[i] = Array(bLimit);
-        }
-        for (let i = 0; i < aLimit; ++i) {
-            distance[i][0] = i;
-        }
-        for (let j = 0; j < bLimit; ++j) {
-            distance[0][j] = j;
-        }
-        for (let i = 1; i < aLimit; ++i) {
-            for (let j = 1; j < bLimit; ++j) {
-                const substitutionCost = (a[i - 1] === b[j - 1] ? 0 : 1);
-                distance[i][j] = Math.min(
-                    distance[i - 1][j] + 1,
-                    distance[i][j - 1] + 1,
-                    distance[i - 1][j - 1] + substitutionCost
-                );
-            }
-        }
-        return distance[a.length][b.length];
-    };
-
     function generateTeamKey(team) {
         if (!team) {
             return "";
@@ -288,8 +262,7 @@
             return "No color passed";
         }
         if (id > 5999) {
-            //TODO: change this when I can find pet frames to use
-            return resource_Url + ("Frames/Hero_" + color + ".png");
+            return resource_Url + ("Frames/Pet_" + color + ".png");
         }
         return resource_Url + ("Frames/Hero_" + color + ".png");
     }
@@ -775,25 +748,13 @@
             warningLog("getBestMatchingHero - heros empty");
             return null;
         }
-        debugLog("getBestMatchingHero - start loop" + hero.key);
-        let bestHero = heros[0];
-        let bestScore = 999999999;
+        debugLog("getBestMatchingHero - start loop " + hero.key);
         for (const currentHero of heros) {
-            debugLog(currentHero.key);
-            if (currentHero.key == hero.key) {
-                return currentHero;
-            }
             if (currentHero.id == hero.id) {
                 return currentHero;
             }
-            const newScore = calculateLevenshteinDistance(currentHero.key, hero.key);
-            if (newScore < bestScore) {
-                debugLog("Better - " + currentHero.key);
-                bestScore = newScore;
-                bestHero = currentHero;
-            }
         }
-        return bestHero;
+        return { id: -1, key: "" };
     }
 
     function setupRecommendations(enemies, getRecommendationFunc) {
