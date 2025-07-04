@@ -1,4 +1,4 @@
-// ==UserScript==
+﻿// ==UserScript==
 // @name         Hero Wars Helper
 // @namespace    http://l-space-design.com/
 // @version      0.9
@@ -10,16 +10,19 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @grant        GM_registerMenuCommand
 // ==/UserScript==
+
+
 
 (function () {
     'use strict';
     const base_Url = 'https://raw.githubusercontent.com/rwil02/herowars/main/';
     const resource_Url = base_Url + 'Resources/';
     const max_HistorySize = 700;
-    const DEBUG = GM_getValue('LOG_DEBUG', 'true') != 'false';
-    const INFO = GM_getValue('LOG_INFO', 'true') != 'false';
-    const WARNING = GM_getValue('LOG_WARNING', 'true') != 'false';
+    let DEBUG = GM_getValue('LOG_DEBUG', 'true') != 'false';
+    let INFO = GM_getValue('LOG_INFO', 'true') != 'false';
+    let WARNING = GM_getValue('LOG_WARNING', 'true') != 'false';
 
     try { GM_xmlhttpRequest = GM_xmlhttpRequest || this.GM_xmlhttpRequest; } catch (e) { GM_xmlhttpRequest = false; }
 
@@ -85,6 +88,50 @@
     let hw_GrandArenaHistory = JSON.parse(GM_getValue("hw_GrandArenaHistory", "[]"));
     let hw_ArenaHistory = JSON.parse(GM_getValue("hw_ArenaHistory", "[]"));
     let hw_UserId = Number.parseInt(GM_getValue("hw_UserId", ""));
+
+    function promptForUserId(maxCount) {
+        if (maxCount < 1) {
+            return;
+        }
+        const currentId = isNaN(hw_UserId) ? "" : hw_UserId;
+        const newId = prompt('Enter new User ID (Account ID under your details):', currentId);
+        if (newId !== null) {
+            const parsedId = Number.parseInt(newId, 10);
+            if (!isNaN(parsedId) && String(parsedId) === newId.trim()) {
+                GM_setValue("hw_UserId", parsedId);
+                hw_UserId = parsedId;
+                alert("User ID set to: " + parsedId);
+            } else {
+                alert("Invalid User ID. Please enter a valid integer.");
+                promptForUserId(maxCount - 1); // Prompt again if invalid
+            }
+        }
+    }
+    function toggleLogLevel(level, current) {
+        const key = `LOG_${level}`;
+        current = !current;
+        GM_setValue(key, '' + current);
+        if (confirm(`${level} logging is now ${current ? 'ENABLED' : 'DISABLED'}.\n\nReload the page for changes to take effect?\n\nPress OK to reload now, or Cancel to reload later.`)) {
+            location.reload();
+        }
+        return current;
+    }
+
+    GM_registerMenuCommand("Set User ID", promptForUserId);
+
+    GM_registerMenuCommand(`DEBUG logging (${DEBUG ? '✔' : '✘'})`, function () {
+        DEBUG = toggleLogLevel('DEBUG', DEBUG);
+    });
+    GM_registerMenuCommand(`INFO logging (${INFO ? '✔' : '✘'})`, function () {
+        INFO = toggleLogLevel('INFO', INFO);
+    });
+    GM_registerMenuCommand(`WARNING logging (${WARNING ? '✔' : '✘'})`, function () {
+        WARNING = toggleLogLevel('WARNING', WARNING);
+    });
+    // Prompt on load if not set
+    if (isNaN(hw_UserId)) {
+        promptForUserId(5);
+    }
 
     let hw_GA_Recommend = null;
 
@@ -1050,7 +1097,7 @@
             const result = extractArenaEnemies(x);
             if (result) {
                 hw_ArenaFindEnemies = result;
-                setupRecommendations(result, getArenaRecommendation)
+                setupRecommendations(hw_ArenaFindEnemies, getArenaRecommendation)
                 return;
             }
         });
@@ -1160,16 +1207,16 @@
                     "coopBundle_getInfo", "crossClanWar_getBriefInfo", "crossClanWar_getSettings", "dailyBonusGetInfo",
                     "epicBrawl_getBriefInfo",
                     "epicBrawl_getWinStreak", "expeditionGet", "freebieCheck", "freebieHaveGroup",
-                    "friendsGetInfo", "gacha_getInfo", "getTime", "grandCheckTargetRange",
+                    "friendsGetInfo", "gacha_getInfo", "getTime", "grandCheckTargetRange", "grandFarmCoins",
                     "hallOfFameGetTrophies", "heroesMerchantGet", "heroGetAll", "heroRating_getInfo",
-                    "idle_getAll", "invasion_getInfo", "inventoryGet", "mailGetAll",
+                    "idle_getAll", "invasion_getInfo", "inventoryGet", "mailForm", "mailGetAll",
                     "mechanicAvailability", "mechanicsBan_getInfo", "missionGetAll", "missionGetReplace",
                     "newHeroNotification_get", "newYearGetInfo", "offerGetAll",
                     "offerwall_getActive", "pet_getAll", "pet_getChest", "pet_getPotionDailyBuyCount",
                     "pirateTreasureIsAvailable", "playable_getAvailable", "powerTournament_getState", "questGetAll",
-                    "questGetEvents", "registration", "rewardedVideo_boxyGetInfo", "roleAscension_getAll",
+                    "questGetEvents", "questFarm", "registration", "rewardedVideo_boxyGetInfo", "roleAscension_getAll",
                     "seasonAdventure_getInfo",
-                    "settingsGetAll", "shopGetAll", "socialQuestGetInfo", "socialQuestGroupJoin",
+                    "settingsGetAll", "shopGetAll", "shopBuy", "socialQuestGetInfo", "socialQuestGroupJoin",
                     "socialQuestGroupJoin", "socialQuestPost", "socialQuestPost", "specialOffer_getAll",
                     "splitGetAll", "stronghold_getInfo", "subscriptionGetInfo", "teamGetAll",
                     "team_getBanners",
