@@ -1,22 +1,21 @@
 ﻿// ==UserScript==
 // @name         Hero Wars Helper
 // @namespace    http://l-space-design.com/
-// @version      1.0.0
+// @version      1.0.1
 // @description  Get Hero Data for Hero Wars
 // @author       Roger Willcocks
 // @match        https://*.hero-wars.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=hero-wars.com
 // @require      http://code.jquery.com/jquery-3.4.1.min.js
-// @updateURL    https://raw.githubusercontent.com/rwil02/herowars/main/HeroWarsHelper.js
-// @downloadURL  https://raw.githubusercontent.com/rwil02/herowars/main/HeroWarsHelper.js
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_registerMenuCommand
 // @grant        GM_unregisterMenuCommand
 // @note         Requires Tampermonkey 4.19+ for dynamic menu support
+// @updateURL    https://raw.githubusercontent.com/rwil02/herowars/main/HeroWarsHelper.js
+// @downloadURL  https://raw.githubusercontent.com/rwil02/herowars/main/HeroWarsHelper.js
 // ==/UserScript==
-
 
 
 (function () {
@@ -39,6 +38,92 @@
             let hero = hw_HeroList[i];
             hw_HeroMap[hero.id] = hero;
         }
+    }
+
+    const defaultLanguage = {
+        // Menu commands
+        setAccountId: "👤 Set Account ID ({hw_UserId})",
+        logDebug: "🛠️ Log DEBUG ({icon})",
+        logInfo: "ℹ️ Log INFO ({icon})",
+        logWarning: "⚠️ Log WARNING ({icon})",
+        exportData: "💾 Export Data (to file)",
+        importData: "📥 Import Data (from file)",
+
+        // Prompts and alerts
+        enterAccountId: "Enter Account ID (under your details):",
+        userIdSet: "User ID set to: {userId}",
+        invalidUserId: "Invalid User ID. Please enter a valid integer.",
+        importedValues: "Imported {count} value(s). Reloading the page so changes take effect.",
+        invalidJson: "Invalid JSON file.",
+
+        // Recommendation UI
+        missingUser: "Missing User",
+        noIdPassed: "No ID passed",
+        noIdMatched: "No ID matched: {heroId}",
+        noColorPassed: "No color passed",
+        noStarsPassed: "No stars passed",
+        noHero: "No Hero",
+        unknownColor: "Unknown: {colorId}",
+    };
+
+    const text = Object.freeze(
+        Object.keys(defaultLanguage).reduce((acc, key) => {
+            acc[key] = key;
+            return acc;
+        }, {})
+    );
+
+    let currentLanguages = new Array();
+    function getText(text_id) {
+        if (!text_id) {
+            return "";
+        }
+        if (currentLanguages.length < 1) {
+            const knownLanguages = ["de"];
+            let lang = (navigator.language || "en").toLowerCase();
+            let langParts = lang.split('-');
+            let langList = [];
+            if (langParts.length === 2) {
+                langList.push(langParts.join('-'));
+            }
+            langList.push(langParts[0]);
+            langList = langList.filter(l => knownLanguages.includes(l));
+            function loadLangs(index) {
+                if (index >= langList.length) {
+                    currentLanguages.push(defaultLanguage);
+                    return;
+                }
+                const langCode = langList[index];
+                GM_xmlhttpRequest({
+                    method: "GET",
+                    url: base_Url + "text_" + langCode + ".json",
+                    headers: { "Accept": "application/json" },
+                    onload: function (response) {
+                        try {
+                            const langObj = JSON.parse(response.responseText);
+                            currentLanguages.push(langObj);
+                        } catch (e) {
+                            // If parsing fails, skip this language
+                        }
+                        loadLangs(index + 1);
+                    },
+                    onerror: function () {
+                        loadLangs(index + 1);
+                    }
+                });
+            }
+            loadLangs(0);
+        }
+        for (let i = 0; i < currentLanguages.length; i++) {
+            const lang = currentLanguages[i];
+            if (lang.hasOwnProperty(text_id)) {
+                return lang[text_id];
+            }
+        }
+        if (defaultLanguage.hasOwnProperty(text_id)) {
+            return defaultLanguage[text_id];
+        }
+        return 'Missing: ' + text_id;
     }
 
     if (GM_xmlhttpRequest) {
@@ -89,24 +174,46 @@
     }
     let hw_ArenaFindEnemies = null;
     let hw_GrandFindEnemies = null;
+    let hw_GA_Recommend = null;
     let hw_GrandArenaHistory = JSON.parse(GM_getValue("hw_GrandArenaHistory", "[]"));
     let hw_ArenaHistory = JSON.parse(GM_getValue("hw_ArenaHistory", "[]"));
     let hw_UserId = Number.parseInt(GM_getValue("hw_UserId", ""));
+
+    function translate(text_id, placeholders) {
+        if (!text_id) {
+            return "";
+        }
+        let text = getText(text_id);
+
+        if (typeof text !== "string") {
+            return text;
+        }
+        if (!placeholders || typeof placeholders !== "object") {
+            return text;
+        }
+        for (const key in placeholders) {
+            if (placeholders.hasOwnProperty(key)) {
+                const value = placeholders[key];
+                text = text.replace(new RegExp(`{${key}}`, 'g'), value);
+            }
+        }
+        return text;
+    }
 
     function promptForUserId(maxCount) {
         if (maxCount < 1) {
             return;
         }
         const currentId = isNaN(hw_UserId) ? "" : hw_UserId;
-        const newId = prompt('Enter Account ID (under your details):', currentId);
+        const newId = prompt(translate(text.enterAccountId), currentId);
         if (newId !== null) {
             const parsedId = Number.parseInt(newId, 10);
             if (!isNaN(parsedId) && String(parsedId) === newId.trim()) {
                 GM_setValue("hw_UserId", parsedId);
                 hw_UserId = parsedId;
-                alert("User ID set to: " + parsedId);
+                alert(translate(text.userIdSet, { userId: parsedId }));
             } else {
-                alert("Invalid User ID. Please enter a valid integer.");
+                alert(translate(text.invalidUserId));
                 promptForUserId(maxCount - 1); // Prompt again if invalid
             }
         }
@@ -188,10 +295,10 @@
                         GM_setValue(key, typeof value === "string" ? value : JSON.stringify(value));
                         count++;
                     }
-                    alert(`Imported ${count} value(s). Reloading the page so changes take effect.`);
+                    alert(translate(text.importedValues, { count }));
                     location.reload();
                 } catch (err) {
-                    alert("Invalid JSON file.");
+                    alert(translate(text.invalidJson));
                 }
             };
             reader.readAsText(file);
@@ -213,33 +320,31 @@
 
     function setupMenuCommands() {
         clearMenuCommands();
-        menuIds.push(GM_registerMenuCommand(`👤 Set Account ID (${hw_UserId})`, function () {
+        menuIds.push(GM_registerMenuCommand(translate(text.setAccountId, { hw_UserId }), function () {
             promptForUserId();
             setupMenuCommands();
         }));
-        menuIds.push(GM_registerMenuCommand(`🛠️ Log DEBUG (${DEBUG ? '✔' : '✘'})`, function () {
+        menuIds.push(GM_registerMenuCommand(translate(text.logDebug, {icon: DEBUG ? '✔' : '✘'}), function () {
             DEBUG = toggleLogLevel('DEBUG', DEBUG);
             setupMenuCommands();
         }));
-        menuIds.push(GM_registerMenuCommand(`ℹ️ Log INFO (${INFO ? '✔' : '✘'})`, function () {
+        menuIds.push(GM_registerMenuCommand(translate(text.logInfo, { icon: INFO ? '✔' : '✘' }), function () {
             INFO = toggleLogLevel('INFO', INFO);
             setupMenuCommands();
         }));
-        menuIds.push(GM_registerMenuCommand(`⚠️ Log WARNING (${WARNING ? '✔' : '✘'})`, function () {
+        menuIds.push(GM_registerMenuCommand(translate(text.logWarning, { icon: WARNING ? '✔' : '✘' }), function () {
             WARNING = toggleLogLevel('WARNING', WARNING);
             setupMenuCommands();
         }));
-        menuIds.push(GM_registerMenuCommand("💾 Export Data (to file)", exportGMValuesToFile));
-        menuIds.push(GM_registerMenuCommand("📥 Import Data (from file)", importGMValuesFromFile));
+        menuIds.push(GM_registerMenuCommand(translate(text.exportData), exportGMValuesToFile));
+        menuIds.push(GM_registerMenuCommand(translate(text.importData), importGMValuesFromFile));
     }
 
-    setupMenuCommands();
-
-    let hw_GA_Recommend = null;
     // Prompt on load if not set
     if (isNaN(hw_UserId)) {
         promptForUserId(5);
     }
+    setupMenuCommands();
 
     function debugLog(message) {
         if (!DEBUG) {
@@ -395,16 +500,21 @@
         warningLog("No ID matched: " + heroid);
         return undefined;
     }
-    function getHeroName(heroid) {
-        if (heroid === undefined || heroid === null) return "No ID passed";
-        const hero = hw_HeroMap[heroid];
-        return hero ? (hero.name ?? "No ID matched: " + heroid) : "No ID matched: " + heroid;
+
+    function getHeroName(heroId) {
+        if (heroId === undefined || heroId === null) {
+            return translate(text.noIdPassed);
+        }
+        const hero = hw_HeroMap[heroId];
+        return hero?.name ? hero.name : translate(text.noIdMatched, { heroId });
     }
 
-    function getHeroImage(heroid) {
-        if (heroid === undefined || heroid === null) return "No ID passed";
-        const hero = hw_HeroMap[heroid];
-        return hero ? resource_Url + (hero.image ?? "No ID matched: " + heroid) : "No ID matched: " + heroid;
+    function getHeroImage(heroId) {
+        if (heroId === undefined || heroId === null) {
+            return translate(text.noIdPassed);
+        }
+        const hero = hw_HeroMap[heroId];
+        return hero?.image ? (resource_Url + hero.image) : translate(text.noIdMatched, { heroId });
     }
 
     function getHeroFrameImage(color, id) {
@@ -412,7 +522,7 @@
             if (color == 0) {
                 return color;
             }
-            return "No color passed";
+            return translate(text.noColorPassed);
         }
         if (id > 5999) {
             return resource_Url + ("Frames/Pet_" + color + ".png");
@@ -423,9 +533,9 @@
     function getHeroStarsImage(stars) {
         if (!stars) {
             if (stars == 0) {
-                return stars;
+                return 0;
             }
-            return "No stars passed";
+            return translate(text.noStarsPassed);
         }
         return resource_Url + ("stars_" + stars + ".png");
 
@@ -583,7 +693,7 @@
             result.userName = enemy.user.name;
         } else {
             result.userId = 0;
-            result.userName = "Missing User";
+            result.userName = translate(text.missingUser);
         }
         result.place = enemy.place;
         result.opponentTeams = [];
@@ -794,12 +904,12 @@
             case 18:
                 return 'Red+2';
         }
-        return "Unknown: " + colorId;
+        return translate(test.unknownColor, { colorId });
     }
 
     function buildHeroDisplay(hero, isMatched) {
         if (!hero) {
-            return "No Hero";
+            return translate(text.noHero);
         }
         let content = '<span style="background-image:url(\'';
         content += htmlEncode(getHeroImage(hero.id));

@@ -1,0 +1,22 @@
+﻿{
+  "setAccountId": "👤 Account-ID festlegen ({hw_UserId})",
+  "logDebug": "🛠️ DEBUG protokollieren ({icon})",
+  "logInfo": "ℹ️ INFO protokollieren ({icon})",
+  "logWarning": "⚠️ WARNUNG protokollieren ({icon})",
+  "exportData": "💾 Daten exportieren (in Datei)",
+  "importData": "📥 Daten importieren (aus Datei)",
+
+  "enterAccountId": "Account-ID eingeben (unter Ihren Angaben):",
+  "userIdSet": "Benutzer-ID gesetzt auf: {userId}",
+  "invalidUserId": "Ungültige Benutzer-ID. Bitte geben Sie eine gültige Ganzzahl ein.",
+  "importedValues": "{count} Wert(e) importiert. Die Seite wird neu geladen, damit die Änderungen wirksam werden.",
+  "invalidJson": "Ungültige JSON-Datei.",
+
+  "missingUser": "Benutzer fehlt",
+  "noIdPassed": "Keine ID übergeben",
+  "noIdMatched": "Keine passende ID: {heroId}",
+  "noColorPassed": "Keine Farbe übergeben",
+  "noStarsPassed": "Keine Sterne übergeben",
+  "noHero": "Kein Held",
+  "unknownColor": "Unbekannt: {colorId}"
+}
