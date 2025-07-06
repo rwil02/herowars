@@ -1,12 +1,14 @@
 ﻿// ==UserScript==
 // @name         Hero Wars Helper
 // @namespace    http://l-space-design.com/
-// @version      0.9
+// @version      1.0.0
 // @description  Get Hero Data for Hero Wars
 // @author       Roger Willcocks
 // @match        https://*.hero-wars.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=hero-wars.com
 // @require      http://code.jquery.com/jquery-3.4.1.min.js
+// @updateURL    https://raw.githubusercontent.com/rwil02/herowars/main/HeroWarsHelper.js
+// @downloadURL  https://raw.githubusercontent.com/rwil02/herowars/main/HeroWarsHelper.js
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -1307,20 +1309,20 @@
                     "bundleGetAllAvailableId", "campaignStoryGetList", "chatsGetAll", "chatGetInfo",
                     "chatGetTalks", "clan_prestigeGetInfo", "clanDomination_getInfo", "clanGetActivityRewardTable",
                     "clanGetInfo", "clanGetPrevData", "clanInvites_getUserInbox", "clanRaid_getInfo",
-                    "clanRaid_ratingInfo", "clanRaidSubscription_getInfo", "clanWarGetBriefInfo", "clanWarGetWarlordInfo",
-                    "coopBundle_getInfo", "crossClanWar_getBriefInfo", "crossClanWar_getSettings", "dailyBonusGetInfo",
+                    "clanRaid_ratingInfo", "clanRaid_farmBossReward", "clanRaid_usersInBossBattle", "clanRaid_endBossBattle", "clanRaid_startBossBattle", "clanRaidSubscription_getInfo", "clanWarGetBriefInfo", "clanWarGetWarlordInfo",
+                    "consumableUseLootBox", "coopBundle_getInfo", "crossClanWar_getBriefInfo", "crossClanWar_getSettings", "dailyBonusGetInfo",
                     "epicBrawl_getBriefInfo",
                     "epicBrawl_getWinStreak", "expeditionGet", "freebieCheck", "freebieHaveGroup",
                     "friendsGetInfo", "gacha_getInfo", "getTime", "grandCheckTargetRange", "grandFarmCoins",
-                    "hallOfFameGetTrophies", "heroesMerchantGet", "heroGetAll", "heroRating_getInfo",
+                    "hallOfFameGetTrophies", "heroesMerchantGet", "heroGetAll", "heroRating_getInfo", "heroUpgradeSkill",
                     "idle_getAll", "invasion_getInfo", "inventoryGet", "mailForm", "mailGetAll",
-                    "mechanicAvailability", "mechanicsBan_getInfo", "missionGetAll", "missionGetReplace",
+                    "mechanicAvailability", "mechanicsBan_getInfo", "missionGetAll", "missionGetReplace", "missionRaid",
                     "newHeroNotification_get", "newYearGetInfo", "offerGetAll",
                     "offerwall_getActive", "pet_getAll", "pet_getChest", "pet_getPotionDailyBuyCount",
                     "pirateTreasureIsAvailable", "playable_getAvailable", "powerTournament_getState", "questGetAll",
                     "questGetEvents", "questFarm", "registration", "rewardedVideo_boxyGetInfo", "roleAscension_getAll",
                     "seasonAdventure_getInfo",
-                    "settingsGetAll", "shopGetAll", "shopBuy", "socialQuestGetInfo", "socialQuestGroupJoin",
+                    "settingsSet", "settingsGetAll", "shopGetAll", "shopBuy", "socialQuestGetInfo", "socialQuestGroupJoin",
                     "socialQuestGroupJoin", "socialQuestPost", "socialQuestPost", "specialOffer_getAll",
                     "splitGetAll", "stronghold_getInfo", "subscriptionGetInfo", "teamGetAll",
                     "team_getBanners",
