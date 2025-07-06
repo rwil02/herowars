@@ -11,6 +11,8 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_registerMenuCommand
+// @grant        GM_unregisterMenuCommand
+// @note         Requires Tampermonkey 4.19+ for dynamic menu support
 // ==/UserScript==
 
 
@@ -94,7 +96,7 @@
             return;
         }
         const currentId = isNaN(hw_UserId) ? "" : hw_UserId;
-        const newId = prompt('Enter new User ID (Account ID under your details):', currentId);
+        const newId = prompt('Enter Account ID (under your details):', currentId);
         if (newId !== null) {
             const parsedId = Number.parseInt(newId, 10);
             if (!isNaN(parsedId) && String(parsedId) === newId.trim()) {
@@ -112,9 +114,6 @@
         const key = `LOG_${level}`;
         current = !current;
         GM_setValue(key, '' + current);
-        if (confirm(`${level} logging is now ${current ? 'ENABLED' : 'DISABLED'}.\n\nReload the page for changes to take effect?\n\nPress OK to reload now, or Cancel to reload later.`)) {
-            location.reload();
-        }
         return current;
     }
 
@@ -160,20 +159,32 @@
                     const data = JSON.parse(e.target.result);
                     let count = 0;
                     for (const key in data) {
-                        if (key) {
-                            const value = data[key];
-                            if ((undefined === value) || (null === value)) {
-                                continue;
-                            }
-                            if (Array.isArray(value) && value.length < 1) {
-                                continue;
-                            }
-                            if (typeof value === "object" && !Array.isArray(value) && Object.keys(value).length === 0) {
-                                continue;
-                            }
-                            GM_setValue(key, value);
-                            count++;
+                        if (!key) {
+                            continue;
                         }
+                        let value = data[key];
+                        if (typeof value === "string") {
+                            value = value.trim();
+                            if ((value.startsWith("{") && value.endsWith("}")) ||
+                                (value.startsWith("[") && value.endsWith("]"))) {
+                                try {
+                                    value = JSON.parse(value);
+                                } catch (e) {
+                                    // Not valid JSON, leave as string
+                                }
+                            }
+                        }
+                        if ((undefined === value) || (null === value)) {
+                            continue;
+                        }
+                        if (Array.isArray(value) && value.length < 1) {
+                            continue;
+                        }
+                        if (typeof value === "object" && !Array.isArray(value) && Object.keys(value).length === 0) {
+                            continue;
+                        }
+                        GM_setValue(key, typeof value === "string" ? value : JSON.stringify(value));
+                        count++;
                     }
                     alert(`Imported ${count} value(s). Reloading the page so changes take effect.`);
                     location.reload();
@@ -186,19 +197,41 @@
         input.click();
     }
 
-    GM_registerMenuCommand("Set User ID", promptForUserId);
+    const menuIds = new Array();
+    function clearMenuCommands() {
+        while (menuIds.length > 0) {
+            const id = menuIds.pop();
+            try {
+                GM_unregisterMenuCommand(id);
+            } catch (e) {
+                console.warn("Failed to unregister menu command: " + id);
+            }
+        }
+    }
 
-    GM_registerMenuCommand(`DEBUG logging (${DEBUG ? '✔' : '✘'})`, function () {
-        DEBUG = toggleLogLevel('DEBUG', DEBUG);
-    });
-    GM_registerMenuCommand(`INFO logging (${INFO ? '✔' : '✘'})`, function () {
-        INFO = toggleLogLevel('INFO', INFO);
-    });
-    GM_registerMenuCommand(`WARNING logging (${WARNING ? '✔' : '✘'})`, function () {
-        WARNING = toggleLogLevel('WARNING', WARNING);
-    });
-    GM_registerMenuCommand("Export Data (to file)", exportGMValuesToFile);
-    GM_registerMenuCommand("Import Data (from file)", importGMValuesFromFile);
+    function setupMenuCommands() {
+        clearMenuCommands();
+        menuIds.push(GM_registerMenuCommand(`👤 Set Account ID (${hw_UserId})`, function () {
+            promptForUserId();
+            setupMenuCommands();
+        }));
+        menuIds.push(GM_registerMenuCommand(`🛠️ Log DEBUG (${DEBUG ? '✔' : '✘'})`, function () {
+            DEBUG = toggleLogLevel('DEBUG', DEBUG);
+            setupMenuCommands();
+        }));
+        menuIds.push(GM_registerMenuCommand(`ℹ️ Log INFO (${INFO ? '✔' : '✘'})`, function () {
+            INFO = toggleLogLevel('INFO', INFO);
+            setupMenuCommands();
+        }));
+        menuIds.push(GM_registerMenuCommand(`⚠️ Log WARNING (${WARNING ? '✔' : '✘'})`, function () {
+            WARNING = toggleLogLevel('WARNING', WARNING);
+            setupMenuCommands();
+        }));
+        menuIds.push(GM_registerMenuCommand("💾 Export Data (to file)", exportGMValuesToFile));
+        menuIds.push(GM_registerMenuCommand("📥 Import Data (from file)", importGMValuesFromFile));
+    }
+
+    setupMenuCommands();
 
     let hw_GA_Recommend = null;
     // Prompt on load if not set
