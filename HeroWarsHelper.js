@@ -107,6 +107,7 @@
             }
         }
     }
+
     function toggleLogLevel(level, current) {
         const key = `LOG_${level}`;
         current = !current;
@@ -115,6 +116,74 @@
             location.reload();
         }
         return current;
+    }
+
+    function exportGMValuesToFile() {
+        const keys = [
+            "hw_UserId",
+            "hw_GrandArenaHistory",
+            "hw_ArenaHistory",
+        ];
+        const data = {};
+        for (const key of keys) {
+            data[key] = GM_getValue(key);
+        }
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[:.]/g, '-').replace('T', '_').slice(0, 19);
+        a.download = `herowars-helper_${hw_UserId}_${timestamp}.json`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
+    }
+
+    function importGMValuesFromFile() {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".json,application/json";
+        input.onchange = function (event) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    let count = 0;
+                    for (const key in data) {
+                        if (key) {
+                            const value = data[key];
+                            if ((undefined === value) || (null === value)) {
+                                continue;
+                            }
+                            if (Array.isArray(value) && value.length < 1) {
+                                continue;
+                            }
+                            if (typeof value === "object" && !Array.isArray(value) && Object.keys(value).length === 0) {
+                                continue;
+                            }
+                            GM_setValue(key, value);
+                            count++;
+                        }
+                    }
+                    alert(`Imported ${count} value(s). Reloading the page so changes take effect.`);
+                    location.reload();
+                } catch (err) {
+                    alert("Invalid JSON file.");
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
     }
 
     GM_registerMenuCommand("Set User ID", promptForUserId);
@@ -128,12 +197,14 @@
     GM_registerMenuCommand(`WARNING logging (${WARNING ? '✔' : '✘'})`, function () {
         WARNING = toggleLogLevel('WARNING', WARNING);
     });
+    GM_registerMenuCommand("Export Data (to file)", exportGMValuesToFile);
+    GM_registerMenuCommand("Import Data (from file)", importGMValuesFromFile);
+
+    let hw_GA_Recommend = null;
     // Prompt on load if not set
     if (isNaN(hw_UserId)) {
         promptForUserId(5);
     }
-
-    let hw_GA_Recommend = null;
 
     function debugLog(message) {
         if (!DEBUG) {
@@ -156,7 +227,7 @@
 
     function getUserId(httpReq) {
         try {
-            if (!httpReq || !httpReq._requestHeaders) {
+            if (!httpReq?._requestHeaders) {
                 return hw_UserId;
             }
             const x = Number.parseInt(httpReq._requestHeaders["X-Auth-Player-Id"]);
