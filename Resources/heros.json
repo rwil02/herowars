@@ -402,6 +402,12 @@
     "position": 67
   },
   {
+    "image": "Avatars/Guus.png",
+    "id": 68,
+    "name": "Guus",
+    "position": 26
+  },
+  {
     "image": "Avatars/Fenris.png",
     "id": 6000,
     "name": "Fenris",

@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name         Hero Wars Helper
 // @namespace    http://l-space-design.com/
-// @version      1.0.3
+// @version      1.0.4
 // @description  Get Hero Data for Hero Wars
 // @author       Roger Willcocks
 // @match        https://*.hero-wars.com/*
@@ -1021,7 +1021,7 @@
         return { id: -1, key: "" };
     }
 
-    function setupRecommendations(enemies, getRecommendationFunc) {
+    function setupRecommendations(recommendationType, enemies, getRecommendationFunc) {
         hideRecommendation();
         if (!enemies || !enemies.length) {
             warningLog("setupRecommendations - invalid");
@@ -1034,7 +1034,7 @@
             results.push(getRecommendationFunc(enemies[i]));
         }
         debugLog(results);
-        setupRecommendationsHeaders(results);
+        setupRecommendationsHeaders(recommendationType, results);
         setupRecommendationsDisplay(results);
         hw_GA_Recommend.show();
     }
@@ -1050,7 +1050,7 @@
         }
     }
 
-    function setupRecommendationsHeaders(results,) {
+    function setupRecommendationsHeaders(recommendationType, results) {
         if (!hw_GA_Recommend) {
             hw_GA_Recommend = jQuery('<div class="hw-recommendation-head">HERE WE GO</div>');
             jQuery('main.layout_content').prepend(hw_GA_Recommend);
@@ -1104,14 +1104,30 @@
             if (winStyle.length > 2) {
                 th.addClass(winStyle);
             }
-            th.dblclick(function () {
-                //TODO: Show more info about this enemy
-                alert("Notes for: " + opponent.userId);
-            });
+            addUserNotes(opponent.userId, recommendationType, th);
             tr.append(th);
             opponent.header = tr;
             thead.append(tr);
         }
+    }
+
+    function addUserNotes(userId, prefix, element) {
+        if (!element) {
+            return;
+        }
+        if (!userId) {
+            return;
+        }
+        element.dblclick(function () {
+            //TODO: allow editing the notes for this opponent
+            alert("Notes for: " + userId);
+        });
+        const notes = hw_Settings[prefix + "_notes_" + userId];
+        if (!notes) {
+            return;
+        }
+        element.attr('title', notes);
+        element.addClass("hw-has-tooltip");
     }
 
     function hookupShowRecommendation(me, header, body, allResults) {
@@ -1289,7 +1305,7 @@
             const result = extractGrandArenaEnemies(x);
             if (result) {
                 hw_GrandFindEnemies = result;
-                setupRecommendations(hw_GrandFindEnemies, getGrandArenaRecommendation)
+                setupRecommendations('GrandArena', hw_GrandFindEnemies, getGrandArenaRecommendation)
                 return;
             }
         });
@@ -1319,7 +1335,7 @@
             const result = extractArenaEnemies(x);
             if (result) {
                 hw_ArenaFindEnemies = result;
-                setupRecommendations(hw_ArenaFindEnemies, getArenaRecommendation)
+                setupRecommendations('Arena', hw_ArenaFindEnemies, getArenaRecommendation)
                 return;
             }
         });

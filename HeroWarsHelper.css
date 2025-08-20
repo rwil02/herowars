@@ -41,54 +41,58 @@ th.hw-recommendation {
     min-width: 40px;
 }
 
-    th.hw-recommendation.never {
-        background-color: #ccccff;
+    th.hw-recommendation.hw-has-tooltip {
+        color: #999999;
     }
 
-    th.hw-recommendation.win0 {
-        background-color: #800000;
-    }
+th.hw-recommendation.never {
+    background-color: #ccccff;
+}
 
-    th.hw-recommendation.win1 {
-        background-color: #80A080;
-    }
+th.hw-recommendation.win0 {
+    background-color: #800000;
+}
 
-    th.hw-recommendation.win2 {
-        background-color: #608060;
-    }
+th.hw-recommendation.win1 {
+    background-color: #80A080;
+}
 
-    th.hw-recommendation.win3 {
-        background-color: #408040;
-    }
+th.hw-recommendation.win2 {
+    background-color: #608060;
+}
 
-    th.hw-recommendation.win4 {
-        background-color: #208020;
-    }
+th.hw-recommendation.win3 {
+    background-color: #408040;
+}
 
-    th.hw-recommendation.avoid {
-        background-color: #cc3300;
-    }
+th.hw-recommendation.win4 {
+    background-color: #208020;
+}
 
-    th.hw-recommendation:first-child {
-        border-radius: 12px 0 0 12px;
-        padding-left: 14px;
-        text-align: left;
-        white-space: nowrap;
-        min-width: 40px;
-    }
+th.hw-recommendation.avoid {
+    background-color: #cc3300;
+}
 
-    th.hw-recommendation:last-child {
-        border-radius: 0 12px 12px 0;
-        padding-right: 14px;
-        text-align: right;
-        white-space: nowrap;
-        min-width: 40px;
-    }
+th.hw-recommendation:first-child {
+    border-radius: 12px 0 0 12px;
+    padding-left: 14px;
+    text-align: left;
+    white-space: nowrap;
+    min-width: 40px;
+}
 
-    th.hw-recommendation:first-child:last-child {
-        border-radius: 12px;
-        text-align: center;
-    }
+th.hw-recommendation:last-child {
+    border-radius: 0 12px 12px 0;
+    padding-right: 14px;
+    text-align: right;
+    white-space: nowrap;
+    min-width: 40px;
+}
+
+th.hw-recommendation:first-child:last-child {
+    border-radius: 12px;
+    text-align: center;
+}
 
 div.hw-recommendation {
     overflow-y: auto;
