@@ -408,6 +408,12 @@
     "position": 26
   },
   {
+    "image": "Avatars/Cascade.png",
+    "id": 69,
+    "name": "Cascade",
+    "position": 26
+  },
+  {
     "image": "Avatars/Fenris.png",
     "id": 6000,
     "name": "Fenris",
