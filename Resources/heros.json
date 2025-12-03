@@ -414,6 +414,12 @@
     "position": 26
   },
   {
+    "image": "Avatars/Electra_von_Grave.png",
+    "id": 70,
+    "name": "Electra von Grave",
+    "position": 2
+  },
+  {
     "image": "Avatars/Fenris.png",
     "id": 6000,
     "name": "Fenris",
