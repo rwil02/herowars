@@ -408,12 +408,6 @@
     "position": 26
   },
   {
-    "image": "Avatars/Fluffy.png",
-    "id": 71,
-    "name": "Fluffy",
-    "position": 29
-  },
-  {
     "image": "Avatars/Cascade.png",
     "id": 69,
     "name": "Cascade",
@@ -424,6 +418,18 @@
     "id": 70,
     "name": "Electra von Grave",
     "position": 2
+  },
+  {
+    "image": "Avatars/Fluffy.png",
+    "id": 71,
+    "name": "Fluffy",
+    "position": 29
+  },
+  {
+    "image": "Avatars/Byrna.png",
+    "id": 72,
+    "name": "Byrna",
+    "position": 29
   },
   {
     "image": "Avatars/Fenris.png",
