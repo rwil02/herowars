@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name         Hero Wars Helper
 // @namespace    http://l-space-design.com/
-// @version      1.0.7
+// @version      1.0.8
 // @description  Get Hero Data for Hero Wars
 // @author       Roger Willcocks
 // @match        https://*.hero-wars.com/*
@@ -905,7 +905,7 @@
             case 18:
                 return 'Red+2';
         }
-        return translate(test.unknownColor, { colorId });
+        return translate(text.unknownColor, { colorId });
     }
 
     function buildHeroDisplay(hero, isMatched) {
