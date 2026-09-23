@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name         Hero Wars Helper
 // @namespace    http://l-space-design.com/
-// @version      1.0.8
+// @version      1.0.9
 // @description  Get Hero Data for Hero Wars
 // @author       Roger Willcocks
 // @match        https://*.hero-wars.com/*
@@ -853,11 +853,11 @@
                 td.addClass("hw-recommendation-unmatched");
             }
             for (const opponentHero of opponents) {
-                let hero = getBestMatchingHero(team, opponentHero);
+                let hero = team ? getBestMatchingHero(team, opponentHero) : false;
                 if (!hero) {
                     hero = false;
                 }
-                td.append(buildHeroDisplay(opponentHero, hero.key == opponentHero.key));
+                td.append(buildHeroDisplay(opponentHero, hero?.key == opponentHero.key));
             }
             tr.append(td);
             content.append(tr);
@@ -1210,7 +1210,7 @@
                 return null;
             }
         }
-        if (!x[0].heroes[0].length) {
+        if (!x[0].heroes.length || !x[0].heroes[0].length) {
             if (place > 10) {
                 debugLog("extractGrandArenaEnemies - no heroes in teams");
                 return null;

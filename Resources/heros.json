@@ -444,6 +444,12 @@
     "position": 470
   },
   {
+    "image": "Avatars/Eva.png",
+    "id": 75,
+    "name": "Eva",
+    "position": 430
+  },
+  {
     "image": "Avatars/Fenris.png",
     "id": 6000,
     "name": "Fenris",
