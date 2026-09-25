@@ -6,7 +6,7 @@
 // @author       Roger Willcocks
 // @match        https://*.hero-wars.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=hero-wars.com
-// @require      http://code.jquery.com/jquery-3.7.1.min.js
+// @require      https://code.jquery.com/jquery-3.7.1.min.js
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
 // @grant        GM_getValue

@@ -6,7 +6,7 @@
 // @author       Roger Willcocks
 // @match        https://*.hero-wars.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=hero-wars.com
-// @require      http://code.jquery.com/jquery-3.7.1.min.js
+// @require      https://code.jquery.com/jquery-3.7.1.min.js
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -22,7 +22,7 @@
     const base_Url = 'https://raw.githubusercontent.com/rwil02/herowars/main/';
     const resource_Url = base_Url + 'Resources/';
     const max_HistorySize = 700;
-    let DEBUG = GM_getValue('LOG_DEBUG', 'true') != 'false';
+    let DEBUG = GM_getValue('LOG_DEBUG', 'false') != 'false';
     let INFO = GM_getValue('LOG_INFO', 'true') != 'false';
     let WARNING = GM_getValue('LOG_WARNING', 'true') != 'false';
 
@@ -73,11 +73,13 @@
     );
 
     let currentLanguages = new Array();
+    let loadingLanguages = false;
     function getText(text_id) {
         if (!text_id) {
             return "";
         }
-        if (currentLanguages.length < 1) {
+        if (currentLanguages.length < 1 && !loadingLanguages) {
+            loadingLanguages = true;
             const knownLanguages = ["de"];
             let lang = (navigator.language || "en").toLowerCase();
             let langParts = lang.split('-');
@@ -226,13 +228,15 @@
         return current;
     }
 
+    const exportImportKeys = [
+        "hw_UserId",
+        "hw_GrandArenaHistory",
+        "hw_ArenaHistory",
+        "hw_Settings",
+    ];
+
     function exportGMValuesToFile() {
-        const keys = [
-            "hw_UserId",
-            "hw_GrandArenaHistory",
-            "hw_ArenaHistory",
-            "hw_Settings",
-        ];
+        const keys = exportImportKeys;
         const data = {};
         for (const key of keys) {
             data[key] = GM_getValue(key);
@@ -270,6 +274,9 @@
                     let count = 0;
                     for (const key in data) {
                         if (!key) {
+                            continue;
+                        }
+                        if (!exportImportKeys.includes(key)) {
                             continue;
                         }
                         let value = data[key];
@@ -542,14 +549,6 @@
 
     }
 
-    function htmlEncode(value) {
-        return jQuery('<div/>').text(value).html();
-    }
-
-    function htmlDecode(value) {
-        return jQuery('<div/>').html(value).text();
-    }
-
     function displayDateTime(value) {
         if (!value) {
             return "";
@@ -720,7 +719,6 @@
                 winCount++;
             }
         }
-        battles.sort((a, b) => { b.startTime - a.startTime });
         result.battles = battles.sort((a, b) => { return b.startTime - a.startTime; });
         if (result.battles && result.battles.length) {
             result.winPercent = winCount / battles.length;
@@ -759,7 +757,6 @@
                 winCount++;
             }
         }
-        battles.sort((a, b) => { b.startTime - a.startTime });
         result.battles = battles.sort((a, b) => { return b.startTime - a.startTime; });
         if (result.battles && result.battles.length) {
             result.winPercent = winCount / battles.length;
@@ -912,26 +909,21 @@
         if (!hero) {
             return translate(text.noHero);
         }
-        let content = '<span style="background-image:url(\'';
-        content += htmlEncode(getHeroImage(hero.id));
-        content += '\');" class="hw-battle-hero-icon" />';
-
-        let result = jQuery(content);
+        let result = jQuery('<span class="hw-battle-hero-icon" />');
+        result.css('background-image', "url('" + getHeroImage(hero.id) + "')");
         if (!isMatched) {
             result.addClass("hw-recommendation-unmatched");
         }
-        content = '<img src="';
-        content += htmlEncode(getHeroStarsImage(hero.star));
-        content += '" style="background-image: url(\'';
-        content += htmlEncode(getHeroFrameImage(hero.color, hero.id));
-        content += '\')';
-        content += '" class="hw-battle-hero-icon" title="';
-        content += htmlEncode(getHeroName(hero.id));
-        content += ' - L:' + hero.level;
-        content += ', S:' + hero.star;
-        content += ', C:' + htmlEncode(mapColor(hero.color));
-        content += '" />';
-        result.append(content);
+        let title = getHeroName(hero.id);
+        title += ' - L:' + hero.level;
+        title += ', S:' + hero.star;
+        title += ', C:' + mapColor(hero.color);
+
+        let img = jQuery('<img class="hw-battle-hero-icon" />');
+        img.attr('src', getHeroStarsImage(hero.star));
+        img.css('background-image', "url('" + getHeroFrameImage(hero.color, hero.id) + "')");
+        img.attr('title', title);
+        result.append(img);
         return result;
     }
 

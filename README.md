@@ -4,7 +4,7 @@
 Roger Willcocks
 
 ### Version
-1.0.6
+1.0.9
 
 ## Links
 **Game:**  https://www.hero-wars.com/
